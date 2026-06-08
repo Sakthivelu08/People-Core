@@ -1,0 +1,88 @@
+<div class="home-wrapper">
+
+    <div class="header">
+        <h2>Welcome to Your Dashboard</h2>
+
+        <button class="logout-btn" (click)="logout()">
+            Sign Out
+        </button>
+    </div>
+
+    @if (profile) {
+    <div class="card">
+
+        <div class="profile-section">
+            <div class="photo">
+                @if (photoUrl) {
+                <img [src]="photoUrl" alt="Profile photo" />
+                } @else {
+                <div class="placeholder">No Photo</div>
+                }
+            </div>
+
+            <div class="details">
+                <h3>{{ profile.displayName }}</h3>
+                <p class="email">{{ profile.mail || profile.userPrincipalName }}</p>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Job Title</label>
+                <p>{{ profile.jobTitle || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+                <label>Department</label>
+                <p>{{ profile.department || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+                <label>Office Location</label>
+                <p>{{ profile.officeLocation || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+                <label>Mobile Phone</label>
+                <p>{{ profile.businessPhones[0] || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+                <label>User ID</label>
+                <p>{{ profile.id }}</p>
+            </div>
+
+            <div class="info-item">
+                <label>UPN</label>
+                <p>{{ profile.userPrincipalName }}</p>
+            </div>
+        </div>
+
+        <div class="groups-section">
+            <h3>User Groups</h3>
+        
+            <div class="groups-grid">
+                @for (g of groups; track g.id) {
+                <div class="group-item">
+                    {{ g.displayName }}
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="groups-section">
+            <h3>User Roles</h3>
+        
+            <div class="groups-grid">
+                @for (r of roles; track r) {
+                <div class="group-item">
+                    {{ r }}
+                </div>
+                }
+            </div>
+        </div>
+
+    </div>
+    }
+
+</div>
