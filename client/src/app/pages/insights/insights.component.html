@@ -1,0 +1,70 @@
+<div class="page">
+    <h1 class="page-title">AI People Insights</h1>
+    <p class="page-sub">Powered by PeopleCore ML Engine · Data as of today</p>
+
+    <!-- AI Narrative -->
+    <div class="narrative-card">
+        <div class="narrative-header">
+            <div class="ai-badge">
+                <span class="material-icons" style="font-size:16px;vertical-align:middle">auto_awesome</span>
+                AI Generated
+            </div>
+            <button class="regenerate-btn" (click)="regenerate()" [disabled]="isGenerating">
+                <span class="material-icons" style="font-size:16px;vertical-align:middle">refresh</span>
+                {{ isGenerating ? 'Generating...' : 'Regenerate' }}
+            </button>
+        </div>
+        @if (isGenerating) {
+        <div class="generating-pulse">
+            <span></span><span></span><span></span>
+        </div>
+        } @else {
+        <p class="narrative-text">{{ narrative }}</p>
+        }
+    </div>
+
+    <div class="two-col">
+        <!-- Attrition Risk Table -->
+        <div class="insight-card">
+            <h2>Attrition Risk</h2>
+            <div class="risk-list">
+                @for (a of attritionData; track a.name) {
+                <div class="risk-row">
+                    <div class="risk-info">
+                        <div class="risk-name">{{ a.name }}</div>
+                        <div class="risk-dept">{{ a.department }}</div>
+                        <div class="risk-factors">
+                            @for (f of a.keyFactors; track f) {
+                            <span class="factor-tag">{{ f }}</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="risk-score-col">
+                        <div class="risk-score {{ a.riskLevel }}">{{ a.riskScore }}</div>
+                        <div class="risk-level {{ a.riskLevel }}">{{ a.riskLevel | titlecase }}</div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Engagement Scores -->
+        <div class="insight-card">
+            <h2>Engagement by Department</h2>
+            <div class="engagement-list">
+                @for (e of engagementData; track e.department) {
+                <div class="engagement-row">
+                    <div class="eng-dept">{{ e.department }}</div>
+                    <div class="eng-bar-wrap">
+                        <div class="eng-bar" [style.width.%]="e.score"></div>
+                    </div>
+                    <div class="eng-score">{{ e.score }}</div>
+                    <div class="eng-trend {{ trendClass(e.trend) }}">
+                        {{ trendIcon(e.trend) }} {{ e.trend | titlecase }}
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

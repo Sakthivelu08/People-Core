@@ -1,28 +1,21 @@
-<div class="home-wrapper">
-
-    <div class="header">
-        <h2>Welcome to Your Dashboard</h2>
-
-        <button class="logout-btn" (click)="logout()">
-            Sign Out
-        </button>
-    </div>
+<div class="page">
+    <h1 class="page-title">My Profile</h1>
 
     @if (profile) {
-    <div class="card">
-
-        <div class="profile-section">
-            <div class="photo">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="avatar">
                 @if (photoUrl) {
                 <img [src]="photoUrl" alt="Profile photo" />
                 } @else {
-                <div class="placeholder">No Photo</div>
+                <div class="avatar-placeholder">
+                    <span class="material-icons">person</span>
+                </div>
                 }
             </div>
-
-            <div class="details">
-                <h3>{{ profile.displayName }}</h3>
-                <p class="email">{{ profile.mail || profile.userPrincipalName }}</p>
+            <div class="profile-meta">
+                <h2 class="profile-name">{{ profile.displayName }}</h2>
+                <p class="profile-email">{{ profile.mail || profile.userPrincipalName }}</p>
             </div>
         </div>
 
@@ -31,58 +24,47 @@
                 <label>Job Title</label>
                 <p>{{ profile.jobTitle || 'N/A' }}</p>
             </div>
-
             <div class="info-item">
                 <label>Department</label>
                 <p>{{ profile.department || 'N/A' }}</p>
             </div>
-
             <div class="info-item">
                 <label>Office Location</label>
                 <p>{{ profile.officeLocation || 'N/A' }}</p>
             </div>
-
             <div class="info-item">
                 <label>Mobile Phone</label>
-                <p>{{ profile.businessPhones[0] || 'N/A' }}</p>
+                <p>{{ profile.businessPhones?.[0] || 'N/A' }}</p>
             </div>
-
             <div class="info-item">
                 <label>User ID</label>
-                <p>{{ profile.id }}</p>
+                <p class="mono">{{ profile.id }}</p>
             </div>
-
             <div class="info-item">
                 <label>UPN</label>
-                <p>{{ profile.userPrincipalName }}</p>
+                <p class="mono">{{ profile.userPrincipalName }}</p>
             </div>
         </div>
+    </div>
 
-        <div class="groups-section">
-            <h3>User Groups</h3>
-        
-            <div class="groups-grid">
+    <div class="row-cards">
+        <div class="tag-card">
+            <h3 class="tag-card-title">User Groups</h3>
+            <div class="tag-list">
                 @for (g of groups; track g.id) {
-                <div class="group-item">
-                    {{ g.displayName }}
-                </div>
+                <span class="tag">{{ g.displayName }}</span>
                 }
             </div>
         </div>
 
-        <div class="groups-section">
-            <h3>User Roles</h3>
-        
-            <div class="groups-grid">
+        <div class="tag-card">
+            <h3 class="tag-card-title">User Roles</h3>
+            <div class="tag-list">
                 @for (r of roles; track r) {
-                <div class="group-item">
-                    {{ r }}
-                </div>
+                <span class="tag role">{{ r }}</span>
                 }
             </div>
         </div>
-
     </div>
     }
-
 </div>

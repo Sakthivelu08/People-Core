@@ -1,0 +1,43 @@
+<div class="page">
+    <h1 class="page-title">Onboarding Status</h1>
+    <div class="readonly-banner">
+        <span class="material-icons" style="font-size:16px;vertical-align:middle">visibility</span>
+        View only — contact HR to update your onboarding progress
+    </div>
+    <!-- Progress Overview -->
+    <div class="progress-card">
+        <div class="progress-header">
+            <div>
+                <div class="progress-label">Overall Progress</div>
+                <div class="progress-count">{{ completedCount }} of {{ tasks.length }} tasks completed</div>
+            </div>
+            <div class="progress-percent">{{ progress }}%</div>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" [style.width.%]="progress"></div>
+        </div>
+    </div>
+
+    <!-- Task Groups -->
+    @for (cat of categories; track cat) {
+    <div class="category-card">
+        <h2 class="category-title">{{ categoryLabel(cat) }}</h2>
+        <div class="task-list">
+            @for (task of getTasksByCategory(cat); track task.id) {
+            <div class="task-item" [class.completed]="task.completed">
+                <span class="material-icons task-check" [class.done]="task.completed">
+                    {{ task.completed ? 'check_circle' : 'radio_button_unchecked' }}
+                </span>
+                <div class="task-body">
+                    <div class="task-title">{{ task.title }}</div>
+                    <div class="task-desc">{{ task.description }}</div>
+                </div>
+                <div class="task-due" [class.overdue]="isOverdue(task)">
+                    Due: {{ task.dueDate }}
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>
