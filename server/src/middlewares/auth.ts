@@ -63,13 +63,11 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
         });
       });
     } else {
-      // In development mode, check header x-user-oid, fallback to default seed admin employee
       const testOid = req.headers['x-user-oid'] || req.headers['X-User-Oid'];
       if (testOid) {
         azureOid = testOid as string;
       } else {
-        // Fallback to Sakthivelu Selvam's seed azure_oid for local ease of access
-        azureOid = 'a5d0a53b-8704-4866-aa37-0ea2a9f93238';
+        azureOid = process.env.DEFAULT_AZURE_OID || '';
       }
     }
 

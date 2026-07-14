@@ -13,7 +13,7 @@
         class="menu-item"
         id="tab-profile-btn"
       >
-        <span class="icon">👤</span> Profile Overview
+        <span class="material-icons-outlined icon">account_circle</span> Profile Overview
       </button>
       
       <button 
@@ -22,7 +22,7 @@
         class="menu-item"
         id="tab-leaves-btn"
       >
-        <span class="icon">📅</span> Leave Tracker
+        <span class="material-icons-outlined icon">date_range</span> Leave Tracker
       </button>
 
       <button 
@@ -31,7 +31,7 @@
         class="menu-item"
         id="tab-onboarding-btn"
       >
-        <span class="icon">📋</span> Onboarding Checklist
+        <span class="material-icons-outlined icon">assignment</span> Onboarding Checklist
       </button>
 
       <button 
@@ -40,8 +40,19 @@
         class="menu-item"
         id="tab-insights-btn"
       >
-        <span class="icon">✨</span> AI HR Insights
+        <span class="material-icons-outlined icon">auto_awesome</span> AI HR Insights
       </button>
+
+      @if (isAdmin) {
+        <button 
+          [class.active]="activeTab === 'admin'" 
+          (click)="activeTab = 'admin'; fetchAdminData();"
+          class="menu-item"
+          id="tab-admin-btn"
+        >
+          <span class="material-icons-outlined icon">admin_panel_settings</span> Onboarding Management
+        </button>
+      }
     </nav>
 
     <div class="sidebar-footer">
@@ -61,7 +72,7 @@
         </div>
       }
       <button class="logout-btn" (click)="logout()" id="logout-btn">
-        <span class="icon">logout</span> Sign Out
+        <span class="material-icons-outlined icon">logout</span> Sign Out
       </button>
     </div>
   </aside>
@@ -183,7 +194,7 @@
           <!-- Balance Summary Cards -->
           <div class="leave-balance-grid">
             <div class="balance-card annual">
-              <span class="card-icon">🏖️</span>
+              <span class="material-icons-outlined card-icon">beach_access</span>
               <div class="card-numbers">
                 <span class="number">{{ leaveBalances?.remaining?.annual ?? 14 }}</span>
                 <span class="label">Annual Days Left</span>
@@ -192,7 +203,7 @@
             </div>
 
             <div class="balance-card sick">
-              <span class="card-icon">🤒</span>
+              <span class="material-icons-outlined card-icon">sick</span>
               <div class="card-numbers">
                 <span class="number">{{ leaveBalances?.remaining?.sick ?? 12 }}</span>
                 <span class="label">Sick Days Left</span>
@@ -201,7 +212,7 @@
             </div>
 
             <div class="balance-card casual">
-              <span class="card-icon">✈️</span>
+              <span class="material-icons-outlined card-icon">flight</span>
               <div class="card-numbers">
                 <span class="number">{{ leaveBalances?.remaining?.casual ?? 6 }}</span>
                 <span class="label">Casual Days Left</span>
@@ -482,6 +493,152 @@
 
         </div>
       }
+
+      @if (activeTab === 'admin' && isAdmin) {
+        <div class="tab-panel animated" id="admin-panel">
+          
+          <div class="admin-header-row">
+            <div>
+              <h3>Employee Onboarding Management</h3>
+              <p class="section-desc">Manage employee accounts and track onboarding checklist progress.</p>
+            </div>
+            <button class="btn-toggle-form" (click)="showAddForm = !showAddForm">
+              {{ showAddForm ? '✕ Close Form' : '+ Add Employee' }}
+            </button>
+          </div>
+
+          @if (showAddForm) {
+            <div class="glass-card add-employee-card animated">
+              <h4>Register New Employee</h4>
+              
+              @if (addEmployeeSuccess) {
+                <div class="alert alert-success">{{ addEmployeeSuccess }}</div>
+              }
+              @if (addEmployeeError) {
+                <div class="alert alert-danger">{{ addEmployeeError }}</div>
+              }
+
+              <form (ngSubmit)="addEmployee()" class="admin-form">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" [(ngModel)]="newEmployee.name" name="name" required placeholder="e.g. Arjun Mehta">
+                  </div>
+                  <div class="form-group">
+                    <label>Email Address *</label>
+                    <input type="email" [(ngModel)]="newEmployee.email" name="email" required placeholder="e.g. arjun.mehta@psiog.com">
+                  </div>
+                  <div class="form-group">
+                    <label>Azure OID (Directory ID) *</label>
+                    <input type="text" [(ngModel)]="newEmployee.azure_oid" name="azure_oid" required placeholder="e.g. generate or actual OID">
+                  </div>
+                  <div class="form-group">
+                    <label>Job Title</label>
+                    <input type="text" [(ngModel)]="newEmployee.job_title" name="job_title" placeholder="e.g. Sales Executive">
+                  </div>
+                  <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" [(ngModel)]="newEmployee.department" name="department" placeholder="e.g. Sales">
+                  </div>
+                  <div class="form-group">
+                    <label>Office Location</label>
+                    <input type="text" [(ngModel)]="newEmployee.office_location" name="office_location" placeholder="e.g. Chennai">
+                  </div>
+                  <div class="form-group">
+                    <label>Mobile Phone</label>
+                    <input type="text" [(ngModel)]="newEmployee.mobile_phone" name="mobile_phone" placeholder="e.g. +91 98765 43210">
+                  </div>
+                  <div class="form-group">
+                    <label>System Role</label>
+                    <select [(ngModel)]="newEmployee.role" name="role">
+                      <option value="Employee">Employee</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Join Date</label>
+                    <input type="date" [(ngModel)]="newEmployee.join_date" name="join_date">
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="submit" class="btn-submit-employee">Register Employee</button>
+                </div>
+              </form>
+            </div>
+          }
+
+          <div class="admin-split-layout">
+            
+            <div class="glass-card employee-list-card">
+              <h4>Employees directory ({{ employeesList.length }})</h4>
+              <div class="employee-rows-container">
+                @for (emp of employeesList; track emp.id) {
+                  <div 
+                    class="employee-row-item" 
+                    [class.selected]="selectedEmployee?.id === emp.id"
+                    (click)="selectEmployee(emp)"
+                  >
+                    <div class="emp-avatar-box">{{ emp.name.charAt(0) }}</div>
+                    <div class="emp-brief">
+                      <span class="emp-name">{{ emp.name }}</span>
+                      <span class="emp-meta">{{ emp.job_title || 'N/A' }} • {{ emp.department || 'N/A' }}</span>
+                    </div>
+                    <span class="role-chip" [class]="emp.role">{{ emp.role }}</span>
+                  </div>
+                } @empty {
+                  <div class="empty-state">No registered employees.</div>
+                }
+              </div>
+            </div>
+
+            <div class="glass-card employee-progress-card">
+              @if (!selectedEmployee) {
+                <div class="select-prompt">
+                  <span class="material-icons-outlined">info</span>
+                  <p>Select an employee from the directory list to inspect and toggle onboarding checklists.</p>
+                </div>
+              } @else {
+                <div class="selected-header">
+                  <div>
+                    <h4>{{ selectedEmployee.name }}</h4>
+                    <p class="sub-text">{{ selectedEmployee.email }} • Started {{ selectedEmployee.join_date | date:'mediumDate' }}</p>
+                  </div>
+                  <div class="progress-ring-badge">{{ adminProgress }}%</div>
+                </div>
+
+                <div class="checklist-progress-bar-container">
+                  <div class="progress-fill" [style.width.%]="adminProgress"></div>
+                </div>
+
+                <div class="admin-checklist-tasks">
+                  @for (task of selectedTasks; track task.id) {
+                    <div 
+                      class="admin-task-row" 
+                      [class.completed]="task.completed"
+                      (click)="toggleAdminTask(task)"
+                    >
+                      <div class="checkbox-mock" [class.checked]="task.completed">
+                        @if (task.completed) { ✓ }
+                      </div>
+                      <div class="task-content">
+                        <h5>{{ task.title }}</h5>
+                        <p>{{ task.description }}</p>
+                        @if (task.completed && task.completed_date) {
+                          <span class="comp-date">Completed {{ task.completed_date | date:'shortDate' }}</span>
+                        }
+                      </div>
+                      <span class="task-category-chip" [class]="task.category">{{ task.category }}</span>
+                    </div>
+                  } @empty {
+                    <div class="empty-state">No onboarding tasks assigned.</div>
+                  }
+                </div>
+              }
+            </div>
+
+          </div>
+
+        </div>
 
     </div>
   </main>

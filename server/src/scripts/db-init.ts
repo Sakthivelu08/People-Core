@@ -1,6 +1,7 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import path from 'path';
+import crypto from 'crypto';
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
@@ -133,13 +134,14 @@ async function main() {
   const [employees]: any = await dbConnection.query('SELECT COUNT(*) as count FROM employees');
   if (employees[0].count === 0) {
     console.log('[DB-Init] Seeding employees...');
+    const defaultOid = process.env.DEFAULT_AZURE_OID || crypto.randomUUID();
     await dbConnection.query(`
       INSERT INTO employees (id, azure_oid, name, email, job_title, department, role, status, join_date) VALUES
-        ('a5d0a53b-8704-4866-aa37-0ea2a9f93238', 'a5d0a53b-8704-4866-aa37-0ea2a9f93238', 'Sakthivelu Selvam', 'sakthivelu.selvam@3dg82f.onmicrosoft.com', 'Senior Developer', 'Engineering', 'Admin', 'active', '2022-06-01'),
+        (?, ?, 'Sakthivelu Selvam', 'sakthivelu.selvam@3dg82f.onmicrosoft.com', 'Senior Developer', 'Engineering', 'Admin', 'active', '2022-06-01'),
         (UUID(), UUID(),                                  'Priya Rajan',       'priya.rajan@psiog.com',                      'HR Manager',       'HR',          'Admin', 'active', '2021-03-15'),
         (UUID(), UUID(),                                  'Arjun Mehta',       'arjun.mehta@psiog.com',                      'Sales Executive',  'Sales',       'Employee', 'onboarding', '2026-06-01'),
         (UUID(), UUID(),                                  'Divya Nair',        'divya.nair@psiog.com',                       'Support Lead',     'Support',     'Employee', 'active', '2023-01-10');
-    `);
+    `, [defaultOid, defaultOid]);
 
     console.log('[DB-Init] Seeding leave balances...');
     await dbConnection.query(`

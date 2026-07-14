@@ -17,10 +17,18 @@ export class HomeComponent implements OnInit {
   photoUrl: string | null = null;
   groups: any[] = [];
   roles: any[] = [];
-
-  // Integration variables
   dbProfile: any = null;
-  activeTab: 'profile' | 'leaves' | 'onboarding' | 'insights' = 'profile';
+
+  activeTab: 'profile' | 'leaves' | 'onboarding' | 'insights' | 'admin' = 'profile';
+
+  employeesList: any[] = [];
+  selectedEmployee: any = null;
+  selectedTasks: any[] = [];
+  adminProgress: number = 0;
+  showAddForm: boolean = false;
+  newEmployee = { name: '', email: '', azure_oid: 'generate', job_title: '', department: '', office_location: '', mobile_phone: '', role: 'Employee', join_date: '' };
+  addEmployeeSuccess: string | null = null;
+  addEmployeeError: string | null = null;
 
   // Leaves state
   leaveBalances: any = null;
@@ -197,6 +205,63 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to toggle task:', err);
+      }
+    });
+  }
+
+  calculateAdminProgress() {
+    if (!this.selectedTasks || this.selectedTasks.length === 0) {
+      this.adminProgress = 0;
+      return;
+    }
+    const completed = this.selectedTasks.filter(t => t.completed).length;
+    this.adminProgress = Math.round((completed / this.selectedTasks.length) * 100);
+  }
+
+  fetchAdminData() {
+    this.api.getEmployees().subscribe({
+      next: (data) => {
+        this.employeesList = data;
+      },
+      error: (err) => console.error('Failed to fetch employees list:', err)
+    });
+  }
+
+  selectEmployee(emp: any) {
+    this.selectedEmployee = emp;
+    this.selectedTasks = [];
+    this.adminProgress = 0;
+    this.api.getOnboardingTasks(emp.id).subscribe({
+      next: (data) => {
+        this.selectedTasks = data;
+        this.calculateAdminProgress();
+      },
+      error: (err) => console.error('Failed to fetch employee onboarding tasks:', err)
+    });
+  }
+
+  toggleAdminTask(task: any) {
+    this.api.toggleOnboardingTask(task.id).subscribe({
+      next: (res) => {
+        task.completed = res.completed;
+        task.completed_date = res.completed_date;
+        this.calculateAdminProgress();
+      },
+      error: (err) => console.error('Failed to toggle onboarding task:', err)
+    });
+  }
+
+  addEmployee() {
+    this.addEmployeeSuccess = null;
+    this.addEmployeeError = null;
+    this.api.registerEmployee(this.newEmployee).subscribe({
+      next: (res) => {
+        this.addEmployeeSuccess = 'Employee registered successfully!';
+        this.newEmployee = { name: '', email: '', azure_oid: 'generate', job_title: '', department: '', office_location: '', mobile_phone: '', role: 'Employee', join_date: '' };
+        this.fetchAdminData();
+      },
+      error: (err) => {
+        this.addEmployeeError = err.error?.error || 'Failed to register employee.';
       }
     });
   }
