@@ -1,6 +1,7 @@
 import { ApplicationConfig, importProvidersFrom, APP_INITIALIZER } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { apiInterceptor } from './auth/api.interceptor';
 
 import { routes } from './app.routes';
 
@@ -48,7 +49,7 @@ export function initializeMsal(msalService: MsalService) {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([apiInterceptor])),
     provideRouter(routes),
 
     importProvidersFrom(

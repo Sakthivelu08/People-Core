@@ -1,19 +1,33 @@
-<div class="login-wrapper">
-
-    <div class="card">
-
-        <div class="branding">
-            <img src="https://angular.io/assets/images/logos/angular/angular.svg" class="angular-logo" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="ms-logo" />
-        </div>
-
-        <h2>Sign in to Continue</h2>
-
-        <button class="login-btn" (click)="login()">
-            <img src="https://img.icons8.com/color/48/microsoft.png" />
-            Sign in with Microsoft
-        </button>
-
+<div class="login-container">
+  <div class="background-decor">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
+  
+  <div class="login-card">
+    <div class="brand-header">
+      <div class="logo-box">P</div>
+      <h1 class="brand-title">PeopleCore</h1>
+      <p class="brand-tagline">Integrated HR & AI Insights Platform</p>
     </div>
 
+    <div class="card-divider"></div>
+
+    <h2 class="login-title">Sign In</h2>
+    <p class="login-desc">Access your workspace using your secure enterprise credentials.</p>
+
+    <button class="sso-button" (click)="login()">
+      <svg class="microsoft-icon" viewBox="0 0 23 23">
+        <rect x="0" y="0" width="11" height="11" fill="#f25022"/>
+        <rect x="12" y="0" width="11" height="11" fill="#7fba00"/>
+        <rect x="0" y="12" width="11" height="11" fill="#00a4ef"/>
+        <rect x="12" y="12" width="11" height="11" fill="#ffb900"/>
+      </svg>
+      Sign in with Microsoft SSO
+    </button>
+
+    <div class="card-footer">
+      <span class="secure-badge">🛡️ Authorized Access Only</span>
+    </div>
+  </div>
 </div>

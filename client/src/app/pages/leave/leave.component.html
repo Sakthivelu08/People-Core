@@ -1,0 +1,109 @@
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Leave Management</h1>
+        <button class="btn-primary" (click)="showForm = !showForm">
+            {{ showForm ? '✕ Cancel' : '+ Apply for Leave' }}
+        </button>
+    </div>
+
+    <!-- Balance Cards -->
+    <div class="balance-grid">
+        <div class="balance-card annual">
+            <span class="bal-label">Annual Leave</span>
+            <span class="bal-value">{{ balance.annual }}</span>
+            <span class="bal-sub">days remaining</span>
+        </div>
+        <div class="balance-card sick">
+            <span class="bal-label">Sick Leave</span>
+            <span class="bal-value">{{ balance.sick }}</span>
+            <span class="bal-sub">days remaining</span>
+        </div>
+        <div class="balance-card casual">
+            <span class="bal-label">Casual Leave</span>
+            <span class="bal-value">{{ balance.casual }}</span>
+            <span class="bal-sub">days remaining</span>
+        </div>
+    </div>
+
+    <!-- Success banner -->
+    @if (submitSuccess) {
+    <div class="success-banner">✅ Leave request submitted successfully!</div>
+    }
+
+    <!-- Apply Form -->
+    @if (showForm) {
+    <div class="form-card">
+        <h2>New Leave Request</h2>
+        <form [formGroup]="leaveForm" (ngSubmit)="submit()">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Leave Type</label>
+                    <select formControlName="type">
+                        <option value="annual">Annual</option>
+                        <option value="sick">Sick</option>
+                        <option value="casual">Casual</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duration</label>
+                    <div class="days-badge">{{ days }} day{{ days !== 1 ? 's' : '' }}</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" formControlName="startDate" />
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" formControlName="endDate" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Reason</label>
+                <textarea formControlName="reason" rows="3" placeholder="Minimum 10 characters..."></textarea>
+                @if (leaveForm.get('reason')?.touched && leaveForm.get('reason')?.invalid) {
+                <span class="error">Please enter a reason (min 10 characters)</span>
+                }
+            </div>
+
+            <button type="submit" class="btn-primary" [disabled]="leaveForm.invalid">
+                Submit Request
+            </button>
+        </form>
+    </div>
+    }
+
+    <!-- History Table -->
+    <div class="table-card">
+        <h2>Leave History</h2>
+        <table class="leave-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Applied</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (r of requests; track r.id) {
+                <tr>
+                    <td><span class="type-badge {{ r.type }}">{{ r.type | titlecase }}</span></td>
+                    <td>{{ r.startDate }}</td>
+                    <td>{{ r.endDate }}</td>
+                    <td>{{ r.days }}</td>
+                    <td class="reason-cell">{{ r.reason }}</td>
+                    <td>{{ r.appliedOn }}</td>
+                    <td><span class="status-badge {{ r.status }}">{{ r.status | titlecase }}</span></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
