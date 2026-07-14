@@ -1,645 +1,93 @@
-<div class="home-wrapper">
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-logo">P</div>
-      <span class="brand-name">PeopleCore</span>
-    </div>
+<header class="content-header">
+  <div class="header-title">
+    <h1>My Profile</h1>
+    <p class="subtitle">Welcome to your PeopleCore workspace profile.</p>
+  </div>
+</header>
 
-    <nav class="sidebar-menu">
-      <button 
-        [class.active]="activeTab === 'profile'" 
-        (click)="activeTab = 'profile'"
-        class="menu-item"
-        id="tab-profile-btn"
-      >
-        <span class="material-icons-outlined icon">account_circle</span> Profile Overview
-      </button>
-      
-      <button 
-        [class.active]="activeTab === 'leaves'" 
-        (click)="activeTab = 'leaves'"
-        class="menu-item"
-        id="tab-leaves-btn"
-      >
-        <span class="material-icons-outlined icon">date_range</span> Leave Tracker
-      </button>
-
-      <button 
-        [class.active]="activeTab === 'onboarding'" 
-        (click)="activeTab = 'onboarding'"
-        class="menu-item"
-        id="tab-onboarding-btn"
-      >
-        <span class="material-icons-outlined icon">assignment</span> Onboarding Checklist
-      </button>
-
-      <button 
-        [class.active]="activeTab === 'insights'" 
-        (click)="activeTab = 'insights'"
-        class="menu-item"
-        id="tab-insights-btn"
-      >
-        <span class="material-icons-outlined icon">auto_awesome</span> AI HR Insights
-      </button>
-
-      @if (isAdmin) {
-        <button 
-          [class.active]="activeTab === 'admin'" 
-          (click)="activeTab = 'admin'; fetchAdminData();"
-          class="menu-item"
-          id="tab-admin-btn"
-        >
-          <span class="material-icons-outlined icon">admin_panel_settings</span> Onboarding Management
-        </button>
-      }
-    </nav>
-
-    <div class="sidebar-footer">
-      @if (profile) {
-        <div class="user-summary">
-          <div class="avatar-sm">
-            @if (photoUrl) {
-              <img [src]="photoUrl" alt="Avatar" />
-            } @else {
-              <div class="avatar-placeholder-sm">{{ profile.displayName?.charAt(0) }}</div>
-            }
-          </div>
-          <div class="user-details-sm">
-            <span class="name">{{ profile.displayName }}</span>
-            <span class="role">{{ dbProfile?.role || 'Employee' }}</span>
-          </div>
-        </div>
-      }
-      <button class="logout-btn" (click)="logout()" id="logout-btn">
-        <span class="material-icons-outlined icon">logout</span> Sign Out
-      </button>
-    </div>
-  </aside>
-
-  <!-- Main Content Space -->
-  <main class="main-content">
-    <header class="content-header">
-      <div class="header-title">
-        <h1>
-          @if (activeTab === 'profile') { Profile Overview }
-          @if (activeTab === 'leaves') { Leave Tracker }
-          @if (activeTab === 'onboarding') { Onboarding Checklist }
-          @if (activeTab === 'insights') { AI HR Insights }
-        </h1>
-        <p class="subtitle">Welcome to your PeopleCore workspace dashboard.</p>
+@if (profile) {
+  <div class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-avatar-large">
+        @if (photoUrl) {
+          <img [src]="photoUrl" alt="Large profile photo" />
+        } @else {
+          <div class="large-placeholder">{{ profile.displayName?.charAt(0) }}</div>
+        }
       </div>
-    </header>
-
-    <!-- Tab Panels -->
-    <div class="tab-panel-container">
-      
-      <!-- PROFILE TAB -->
-      @if (activeTab === 'profile') {
-        <div class="tab-panel animated" id="profile-panel">
-          @if (profile) {
-            <div class="profile-card">
-              <div class="profile-card-header">
-                <div class="profile-avatar-large">
-                  @if (photoUrl) {
-                    <img [src]="photoUrl" alt="Large profile photo" />
-                  } @else {
-                    <div class="large-placeholder">{{ profile.displayName?.charAt(0) }}</div>
-                  }
-                </div>
-                <div class="profile-title-area">
-                  <h2>{{ profile.displayName }}</h2>
-                  <p class="role-badge" [class.admin]="isAdmin">{{ dbProfile?.role || 'Employee' }}</p>
-                  <p class="email">{{ profile.mail || profile.userPrincipalName }}</p>
-                </div>
-              </div>
-
-              <div class="profile-body-grid">
-                <div class="info-card">
-                  <h3>Workplace Information</h3>
-                  <div class="info-row">
-                    <span class="label">Job Title</span>
-                    <span class="value">{{ dbProfile?.job_title || profile.jobTitle || 'N/A' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="label">Department</span>
-                    <span class="value">{{ dbProfile?.department || profile.department || 'N/A' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="label">Office Location</span>
-                    <span class="value">{{ dbProfile?.office_location || profile.officeLocation || 'N/A' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="label">Join Date</span>
-                    <span class="value">{{ dbProfile?.join_date ? (dbProfile.join_date | date:'longDate') : 'N/A' }}</span>
-                  </div>
-                </div>
-
-                <div class="info-card">
-                  <h3>Contact & System Details</h3>
-                  <div class="info-row">
-                    <span class="label">Mobile Phone</span>
-                    <span class="value">{{ dbProfile?.mobile_phone || profile.businessPhones?.[0] || 'N/A' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="label">Status</span>
-                    <span class="value status-pill" [class]="dbProfile?.status">{{ dbProfile?.status || 'active' }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="label">Azure OID</span>
-                    <span class="value code-font">{{ dbProfile?.azure_oid || profile.id }}</span>
-                  </div>
-                  <div class="info-row">
-                    <span class="label">User Principal Name</span>
-                    <span class="value">{{ profile.userPrincipalName }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="profile-lists-grid">
-                <div class="security-card">
-                  <h3>Assigned Groups</h3>
-                  <div class="pills-container">
-                    @for (g of groups; track g.id) {
-                      <span class="pill-badge group-badge">{{ g.displayName }}</span>
-                    } @empty {
-                      <p class="no-data">No group assignments resolved.</p>
-                    }
-                  </div>
-                </div>
-                
-                <div class="security-card">
-                  <h3>Azure Directory Roles</h3>
-                  <div class="pills-container">
-                    @for (r of roles; track r) {
-                      <span class="pill-badge role-badge">{{ r }}</span>
-                    } @empty {
-                      <p class="no-data">No custom application roles in token.</p>
-                    }
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          } @else {
-            <div class="loading-state">Loading user profile details...</div>
-          }
-        </div>
-      }
-
-      <!-- LEAVES TAB -->
-      @if (activeTab === 'leaves') {
-        <div class="tab-panel animated" id="leaves-panel">
-          
-          <!-- Balance Summary Cards -->
-          <div class="leave-balance-grid">
-            <div class="balance-card annual">
-              <span class="material-icons-outlined card-icon">beach_access</span>
-              <div class="card-numbers">
-                <span class="number">{{ leaveBalances?.remaining?.annual ?? 14 }}</span>
-                <span class="label">Annual Days Left</span>
-              </div>
-              <span class="allocated-label">Allocated: {{ leaveBalances?.allocated?.annual ?? 14 }} | Used: {{ leaveBalances?.used?.annual ?? 0 }}</span>
-            </div>
-
-            <div class="balance-card sick">
-              <span class="material-icons-outlined card-icon">sick</span>
-              <div class="card-numbers">
-                <span class="number">{{ leaveBalances?.remaining?.sick ?? 12 }}</span>
-                <span class="label">Sick Days Left</span>
-              </div>
-              <span class="allocated-label">Allocated: {{ leaveBalances?.allocated?.sick ?? 12 }} | Used: {{ leaveBalances?.used?.sick ?? 0 }}</span>
-            </div>
-
-            <div class="balance-card casual">
-              <span class="material-icons-outlined card-icon">flight</span>
-              <div class="card-numbers">
-                <span class="number">{{ leaveBalances?.remaining?.casual ?? 6 }}</span>
-                <span class="label">Casual Days Left</span>
-              </div>
-              <span class="allocated-label">Allocated: {{ leaveBalances?.allocated?.casual ?? 6 }} | Used: {{ leaveBalances?.used?.casual ?? 0 }}</span>
-            </div>
-          </div>
-
-          <div class="leaves-layout-grid">
-            
-            <!-- Submit Leave Form -->
-            <div class="glass-card leave-form-section">
-              <h3>Submit Leave Request</h3>
-              
-              @if (leaveSuccess) {
-                <div class="alert alert-success">{{ leaveSuccess }}</div>
-              }
-              @if (leaveError) {
-                <div class="alert alert-danger">{{ leaveError }}</div>
-              }
-
-              <form (submit)="submitLeave(); $event.preventDefault()">
-                <div class="form-group">
-                  <label for="leave-type">Leave Type</label>
-                  <select id="leave-type" name="type" [(ngModel)]="newLeave.type">
-                    <option value="annual">Annual Leave</option>
-                    <option value="sick">Sick Leave</option>
-                    <option value="casual">Casual Leave</option>
-                  </select>
-                </div>
-
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label for="start-date">Start Date</label>
-                    <input type="date" id="start-date" name="start_date" [(ngModel)]="newLeave.start_date" required />
-                  </div>
-                  <div class="form-group">
-                    <label for="end-date">End Date</label>
-                    <input type="date" id="end-date" name="end_date" [(ngModel)]="newLeave.end_date" required />
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="days-count">Requested Days</label>
-                  <input type="number" id="days-count" name="days" [(ngModel)]="newLeave.days" min="1" required />
-                </div>
-
-                <div class="form-group">
-                  <label for="reason">Reason</label>
-                  <textarea id="reason" name="reason" [(ngModel)]="newLeave.reason" rows="3" placeholder="Enter request details..." required></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn" id="submit-leave-btn">Submit Request</button>
-              </form>
-            </div>
-
-            <!-- Leave Request History -->
-            <div class="glass-card leave-history-section">
-              <h3>Leave Request History</h3>
-              <div class="history-list scrollbar">
-                @for (req of leaveRequests; track req.id) {
-                  <div class="history-item">
-                    <div class="history-left">
-                      <span class="leave-type-chip" [class]="req.type">{{ req.type | titlecase }}</span>
-                      <span class="date-range">{{ req.start_date | date:'mediumDate' }} - {{ req.end_date | date:'mediumDate' }}</span>
-                      <span class="days-text">({{ req.days }} day{{ req.days > 1 ? 's' : '' }})</span>
-                    </div>
-                    <div class="history-right">
-                      <p class="reason">"{{ req.reason }}"</p>
-                      <span class="status-badge" [class]="req.status">{{ req.status }}</span>
-                    </div>
-                  </div>
-                } @empty {
-                  <div class="empty-state">No leave requests found.</div>
-                }
-              </div>
-            </div>
-
-          </div>
-
-          <!-- ADMIN LEAVE PANEL -->
-          @if (isAdmin) {
-            <div class="glass-card admin-leaves-panel animated">
-              <h3>Admin Review Panel - Leave Requests</h3>
-              <div class="table-container">
-                <table class="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Employee</th>
-                      <th>Type</th>
-                      <th>Dates</th>
-                      <th>Days</th>
-                      <th>Reason</th>
-                      <th>Status</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (req of leaveRequests; track req.id) {
-                      @if (req.employee_id !== dbProfile?.id) {
-                        <tr>
-                          <td>
-                            <div class="emp-cell">
-                              <span class="emp-name">{{ req.employee_name }}</span>
-                              <span class="emp-email">{{ req.employee_email }}</span>
-                            </div>
-                          </td>
-                          <td><span class="leave-type-chip" [class]="req.type">{{ req.type }}</span></td>
-                          <td>{{ req.start_date | date:'shortDate' }} - {{ req.end_date | date:'shortDate' }}</td>
-                          <td>{{ req.days }}</td>
-                          <td class="reason-cell">"{{ req.reason }}"</td>
-                          <td><span class="status-badge" [class]="req.status">{{ req.status }}</span></td>
-                          <td>
-                            @if (req.status === 'pending') {
-                              <div class="action-buttons">
-                                <button (click)="approveLeave(req.id)" class="btn-approve" [id]="'approve-btn-' + req.id">Approve</button>
-                                <button (click)="rejectLeave(req.id)" class="btn-reject" [id]="'reject-btn-' + req.id">Reject</button>
-                              </div>
-                            } @else {
-                              <span class="reviewed-text">Reviewed</span>
-                            }
-                          </td>
-                        </tr>
-                      }
-                    } @empty {
-                      <tr>
-                        <td colspan="7" class="empty-cell">No requests to display.</td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          }
-
-        </div>
-      }
-
-      <!-- ONBOARDING TAB -->
-      @if (activeTab === 'onboarding') {
-        <div class="tab-panel animated" id="onboarding-panel">
-          
-          <!-- Onboarding Progress -->
-          <div class="glass-card progress-summary">
-            <h3>Onboarding Track Completion</h3>
-            <div class="progress-details">
-              <span>Your onboarding checklist helps you sync up with workflows and compliance tracks.</span>
-            </div>
-          </div>
-
-          <!-- Onboarding Tasks List -->
-          <div class="onboarding-grid">
-            @for (task of onboardingTasks; track task.id) {
-              <div 
-                class="task-card" 
-                [class.completed]="task.completed"
-                (click)="toggleTask(task)"
-                [id]="'task-card-' + task.id"
-              >
-                <div class="task-checkbox-area">
-                  <div class="checkbox-mock" [class.checked]="task.completed">
-                    @if (task.completed) { ✓ }
-                  </div>
-                </div>
-                <div class="task-info">
-                  <div class="task-header-row">
-                    <span class="task-category-chip" [class]="task.category">{{ task.category | titlecase }}</span>
-                    <span class="task-due" [class.overdue]="!task.completed && task.due_date">
-                      Due: {{ task.due_date | date:'mediumDate' }}
-                    </span>
-                  </div>
-                  <h4>{{ task.title }}</h4>
-                  <p>{{ task.description }}</p>
-                  @if (task.completed && task.completed_date) {
-                    <span class="completed-on">Completed: {{ task.completed_date | date:'mediumDate' }}</span>
-                  }
-                </div>
-              </div>
-            } @empty {
-              <div class="empty-state">No onboarding tasks initialized.</div>
-            }
-          </div>
-
-        </div>
-      }
-
-      <!-- INSIGHTS TAB -->
-      @if (activeTab === 'insights') {
-        <div class="tab-panel animated" id="insights-panel">
-          
-          <!-- Executive Narrative Summary Card -->
-          <div class="glass-card narrative-card">
-            <div class="narrative-header">
-              <span class="glow-dot"></span>
-              <h3>AI-Generated HR Workforce Narrative</h3>
-            </div>
-            @if (narrativeSummary) {
-              <p class="narrative-text">"{{ narrativeSummary }}"</p>
-            } @else {
-              <p class="narrative-text empty">No executive narrative summary generated. Check database/keys.</p>
-            }
-            <span class="engine-badge">Powered by Gemini-2.5-Flash</span>
-          </div>
-
-          <div class="insights-grid">
-            
-            <!-- Engagement Trends -->
-            <div class="glass-card engagement-card">
-              <h3>Department Engagement Metrics</h3>
-              <div class="engagement-list">
-                @for (item of engagementScores; track item.id) {
-                  <div class="engagement-item">
-                    <div class="dept-info">
-                      <span class="dept-name">{{ item.department }}</span>
-                      <span class="trend-indicator" [class]="item.trend">
-                        @if (item.trend === 'rising') { 📈 Rising }
-                        @if (item.trend === 'declining') { 📉 Declining }
-                        @if (item.trend === 'stable') { ➡️ Stable }
-                      </span>
-                    </div>
-                    <div class="score-bar-container">
-                      <div class="score-bar" [style.width.%]="item.score" [class]="item.trend"></div>
-                      <span class="score-val">{{ item.score }}/100</span>
-                    </div>
-                  </div>
-                } @empty {
-                  <div class="empty-state">No engagement data resolved.</div>
-                }
-              </div>
-            </div>
-
-            <!-- Attrition Risk (Admin Only) -->
-            @if (isAdmin) {
-              <div class="glass-card attrition-card animated">
-                <h3>Attrition Risk Scoreboard (Admins Only)</h3>
-                <div class="attrition-list">
-                  @for (score of attritionRisk; track score.id) {
-                    <div class="attrition-item">
-                      <div class="attrition-header">
-                        <div class="attrition-emp-info">
-                          <strong>{{ score.name }}</strong>
-                          <span>{{ score.jobTitle }} • {{ score.department }}</span>
-                        </div>
-                        <span class="risk-badge" [class]="score.riskLevel">
-                          {{ score.riskLevel | uppercase }}
-                        </span>
-                      </div>
-                      <div class="risk-meter-wrapper">
-                        <span class="risk-label">Risk Index: {{ score.riskScore }}%</span>
-                        <div class="risk-bar-container">
-                          <div class="risk-bar" [style.width.%]="score.riskScore" [class]="score.riskLevel"></div>
-                        </div>
-                      </div>
-                      <div class="risk-factors">
-                        <strong>Key Signals:</strong>
-                        <div class="factor-pills">
-                          @for (factor of score.keyFactors; track factor) {
-                            <span class="factor-pill">{{ factor }}</span>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                  } @empty {
-                    <div class="empty-state">No attrition data available.</div>
-                  }
-                </div>
-              </div>
-            } @else {
-              <!-- Friendly Message for non-admins -->
-              <div class="glass-card non-admin-message">
-                <span class="lock-icon">🔒</span>
-                <h3>Attrition Insights Restricted</h3>
-                <p>Detailed individual attrition indicators and hazard indices are restricted to HR Executives and Organization Administrators.</p>
-              </div>
-            }
-
-          </div>
-
-        </div>
-      }
-
-      @if (activeTab === 'admin' && isAdmin) {
-        <div class="tab-panel animated" id="admin-panel">
-          
-          <div class="admin-header-row">
-            <div>
-              <h3>Employee Onboarding Management</h3>
-              <p class="section-desc">Manage employee accounts and track onboarding checklist progress.</p>
-            </div>
-            <button class="btn-toggle-form" (click)="showAddForm = !showAddForm">
-              {{ showAddForm ? '✕ Close Form' : '+ Add Employee' }}
-            </button>
-          </div>
-
-          @if (showAddForm) {
-            <div class="glass-card add-employee-card animated">
-              <h4>Register New Employee</h4>
-              
-              @if (addEmployeeSuccess) {
-                <div class="alert alert-success">{{ addEmployeeSuccess }}</div>
-              }
-              @if (addEmployeeError) {
-                <div class="alert alert-danger">{{ addEmployeeError }}</div>
-              }
-
-              <form (ngSubmit)="addEmployee()" class="admin-form">
-                <div class="form-grid">
-                  <div class="form-group">
-                    <label>Full Name *</label>
-                    <input type="text" [(ngModel)]="newEmployee.name" name="name" required placeholder="e.g. Arjun Mehta">
-                  </div>
-                  <div class="form-group">
-                    <label>Email Address *</label>
-                    <input type="email" [(ngModel)]="newEmployee.email" name="email" required placeholder="e.g. arjun.mehta@psiog.com">
-                  </div>
-                  <div class="form-group">
-                    <label>Azure OID (Directory ID) *</label>
-                    <input type="text" [(ngModel)]="newEmployee.azure_oid" name="azure_oid" required placeholder="e.g. generate or actual OID">
-                  </div>
-                  <div class="form-group">
-                    <label>Job Title</label>
-                    <input type="text" [(ngModel)]="newEmployee.job_title" name="job_title" placeholder="e.g. Sales Executive">
-                  </div>
-                  <div class="form-group">
-                    <label>Department</label>
-                    <input type="text" [(ngModel)]="newEmployee.department" name="department" placeholder="e.g. Sales">
-                  </div>
-                  <div class="form-group">
-                    <label>Office Location</label>
-                    <input type="text" [(ngModel)]="newEmployee.office_location" name="office_location" placeholder="e.g. Chennai">
-                  </div>
-                  <div class="form-group">
-                    <label>Mobile Phone</label>
-                    <input type="text" [(ngModel)]="newEmployee.mobile_phone" name="mobile_phone" placeholder="e.g. +91 98765 43210">
-                  </div>
-                  <div class="form-group">
-                    <label>System Role</label>
-                    <select [(ngModel)]="newEmployee.role" name="role">
-                      <option value="Employee">Employee</option>
-                      <option value="Admin">Admin</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label>Join Date</label>
-                    <input type="date" [(ngModel)]="newEmployee.join_date" name="join_date">
-                  </div>
-                </div>
-                <div class="form-actions">
-                  <button type="submit" class="btn-submit-employee">Register Employee</button>
-                </div>
-              </form>
-            </div>
-          }
-
-          <div class="admin-split-layout">
-            
-            <div class="glass-card employee-list-card">
-              <h4>Employees directory ({{ employeesList.length }})</h4>
-              <div class="employee-rows-container">
-                @for (emp of employeesList; track emp.id) {
-                  <div 
-                    class="employee-row-item" 
-                    [class.selected]="selectedEmployee?.id === emp.id"
-                    (click)="selectEmployee(emp)"
-                  >
-                    <div class="emp-avatar-box">{{ emp.name.charAt(0) }}</div>
-                    <div class="emp-brief">
-                      <span class="emp-name">{{ emp.name }}</span>
-                      <span class="emp-meta">{{ emp.job_title || 'N/A' }} • {{ emp.department || 'N/A' }}</span>
-                    </div>
-                    <span class="role-chip" [class]="emp.role">{{ emp.role }}</span>
-                  </div>
-                } @empty {
-                  <div class="empty-state">No registered employees.</div>
-                }
-              </div>
-            </div>
-
-            <div class="glass-card employee-progress-card">
-              @if (!selectedEmployee) {
-                <div class="select-prompt">
-                  <span class="material-icons-outlined">info</span>
-                  <p>Select an employee from the directory list to inspect and toggle onboarding checklists.</p>
-                </div>
-              } @else {
-                <div class="selected-header">
-                  <div>
-                    <h4>{{ selectedEmployee.name }}</h4>
-                    <p class="sub-text">{{ selectedEmployee.email }} • Started {{ selectedEmployee.join_date | date:'mediumDate' }}</p>
-                  </div>
-                  <div class="progress-ring-badge">{{ adminProgress }}%</div>
-                </div>
-
-                <div class="checklist-progress-bar-container">
-                  <div class="progress-fill" [style.width.%]="adminProgress"></div>
-                </div>
-
-                <div class="admin-checklist-tasks">
-                  @for (task of selectedTasks; track task.id) {
-                    <div 
-                      class="admin-task-row" 
-                      [class.completed]="task.completed"
-                      (click)="toggleAdminTask(task)"
-                    >
-                      <div class="checkbox-mock" [class.checked]="task.completed">
-                        @if (task.completed) { ✓ }
-                      </div>
-                      <div class="task-content">
-                        <h5>{{ task.title }}</h5>
-                        <p>{{ task.description }}</p>
-                        @if (task.completed && task.completed_date) {
-                          <span class="comp-date">Completed {{ task.completed_date | date:'shortDate' }}</span>
-                        }
-                      </div>
-                      <span class="task-category-chip" [class]="task.category">{{ task.category }}</span>
-                    </div>
-                  } @empty {
-                    <div class="empty-state">No onboarding tasks assigned.</div>
-                  }
-                </div>
-              }
-            </div>
-
-          </div>
-
-        </div>
-
+      <div class="profile-title-area">
+        <h2>{{ profile.displayName }}</h2>
+        <p class="role-badge" [class.admin]="isAdmin">{{ dbProfile?.role || 'Employee' }}</p>
+        <p class="email">{{ profile.mail || profile.userPrincipalName }}</p>
+      </div>
     </div>
-  </main>
-</div>
+
+    <div class="profile-body-grid">
+      <div class="info-card">
+        <h3>Workplace Information</h3>
+        <div class="info-row">
+          <span class="label">Job Title</span>
+          <span class="value">{{ dbProfile?.job_title || profile.jobTitle || 'N/A' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Department</span>
+          <span class="value">{{ dbProfile?.department || profile.department || 'N/A' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Office Location</span>
+          <span class="value">{{ dbProfile?.office_location || profile.officeLocation || 'N/A' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Join Date</span>
+          <span class="value">{{ dbProfile?.join_date ? (dbProfile.join_date | date:'longDate') : 'N/A' }}</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <h3>Contact & System Details</h3>
+        <div class="info-row">
+          <span class="label">Mobile Phone</span>
+          <span class="value">{{ dbProfile?.mobile_phone || profile.businessPhones?.[0] || 'N/A' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Status</span>
+          <span class="value status-pill" [class]="dbProfile?.status">{{ dbProfile?.status || 'active' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Azure OID</span>
+          <span class="value code-font">{{ dbProfile?.azure_oid || profile.id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">User Principal Name</span>
+          <span class="value">{{ profile.userPrincipalName }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-lists-grid">
+      <div class="security-card">
+        <h3>Assigned Groups</h3>
+        <div class="pills-container">
+          @for (g of groups; track g.id) {
+            <span class="pill-badge group-badge">{{ g.displayName }}</span>
+          } @empty {
+            <p class="no-data">No group assignments resolved.</p>
+          }
+        </div>
+      </div>
+      
+      <div class="security-card">
+        <h3>Azure Directory Roles</h3>
+        <div class="pills-container">
+          @for (r of roles; track r) {
+            <span class="pill-badge role-badge">{{ r }}</span>
+          } @empty {
+            <p class="no-data">No custom application roles in token.</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="loading-state">Loading user profile details...</div>
+}

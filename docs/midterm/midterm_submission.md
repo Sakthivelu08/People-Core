@@ -119,7 +119,7 @@ EV-06       | Angular ApiService wrapper methods handling HTTP transport | D-06 
 Resource                              | Target URL / Detail
 ------------------------------------- | -------------------
 Code repository URL (GitHub/GitLab)   | https://github.com/Sakthivelu08/People-Core.git
-Latest commit ID + date               | c480598459b823c9e6b310eb75c36e75653b1b69 (Tue Jul 14 23:36:35 2026)
+Latest commit ID + date               | d07c70f4e4ec6536d760401a39b9f4f7b7e6e409 (Wed Jul 15 00:34:53 2026 +0530)
 Deployed / hosted URL (if any)        | N/A
 Demo video or recording link (optional)| N/A
 Notebook / dashboard / other links    | N/A
