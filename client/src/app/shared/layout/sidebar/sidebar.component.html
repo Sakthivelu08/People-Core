@@ -1,29 +1,29 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.admin-sidebar]="isAdminMode">
     <div class="sidebar-brand">
-        <span class="brand-name">PeopleCore</span>
+        <span class="brand-name">{{ portalTitle }}</span>
     </div>
 
     <nav class="sidebar-nav">
-        <div class="nav-section-label">Employee</div>
-        @for (item of employeeNavItems; track item.path) {
+        @for (item of navItems; track item.path) {
         <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
             <span class="material-icons-outlined nav-icon">{{ item.icon }}</span>
             <span class="nav-label">{{ item.label }}</span>
         </a>
-        }
-    
-        @if (isAdmin) {
-        <div class="nav-section-label" style="margin-top: 12px;">Admin</div>
-        @for (item of adminNavItems; track item.path) {
-        <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
-            <span class="material-icons-outlined nav-icon">{{ item.icon }}</span>
-            <span class="nav-label">{{ item.label }}</span>
-        </a>
-        }
         }
     </nav>
 
     <div class="sidebar-footer">
+        @if (isAdmin()) {
+            @if (isAdminMode) {
+            <a routerLink="/employee/profile" class="switch-link">
+                <span class="material-icons-outlined">swap_horiz</span> Switch to Employee
+            </a>
+            } @else {
+            <a routerLink="/admin/dashboard" class="switch-link">
+                <span class="material-icons-outlined">swap_horiz</span> Switch to HR Admin
+            </a>
+            }
+        }
         <button class="logout-btn" (click)="logout()">
             <span class="material-icons-outlined">logout</span> Sign Out
         </button>

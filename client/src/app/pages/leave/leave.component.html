@@ -1,48 +1,28 @@
 <div class="page">
     <div class="page-header">
         <h1 class="page-title">Leave Management</h1>
-        <button class="btn-primary" (click)="showForm = !showForm">
-            {{ showForm ? '✕ Cancel' : '+ Apply for Leave' }}
+        <button class="btn-primary" (click)="showForm.set(!showForm())" style="font-size: 13px; padding: 8px 14px;">
+            {{ showForm() ? 'Cancel' : 'Apply for Leave' }}
         </button>
     </div>
 
     <!-- Balance Cards -->
+    @if (balance()) {
     <div class="balance-grid">
-        <div class="balance-card annual">
-            <span class="bal-label">Annual Leave</span>
-            <span class="bal-value">{{ balance.annual }}</span>
-            <span class="bal-sub">days remaining</span>
-        </div>
-        <div class="balance-card sick">
-            <span class="bal-label">Sick Leave</span>
-            <span class="bal-value">{{ balance.sick }}</span>
-            <span class="bal-sub">days remaining</span>
-        </div>
-        <div class="balance-card casual">
-            <span class="bal-label">Casual Leave</span>
-            <span class="bal-value">{{ balance.casual }}</span>
-            <span class="bal-sub">days remaining</span>
-        </div>
+        <app-metric-card label="Annual Leave" [value]="balance()!.annual" subtext="days remaining" icon="calendar_today" variant="primary"></app-metric-card>
+        <app-metric-card label="Sick Leave" [value]="balance()!.sick" subtext="days remaining" icon="medical_services" variant="success"></app-metric-card>
+        <app-metric-card label="Casual Leave" [value]="balance()!.casual" subtext="days remaining" icon="beach_access" variant="warning"></app-metric-card>
     </div>
-
-    <!-- Success banner -->
-    @if (submitSuccess) {
-    <div class="success-banner">✅ Leave request submitted successfully!</div>
     }
 
+
     <!-- Apply Form -->
-    @if (showForm) {
-    <div class="form-card">
-        <h2>New Leave Request</h2>
+    <app-modal [isOpen]="showForm()" title="New Leave Request" (close)="showForm.set(false)">
         <form [formGroup]="leaveForm" (ngSubmit)="submit()">
             <div class="form-row">
                 <div class="form-group">
                     <label>Leave Type</label>
-                    <select formControlName="type">
-                        <option value="annual">Annual</option>
-                        <option value="sick">Sick</option>
-                        <option value="casual">Casual</option>
-                    </select>
+                    <app-dropdown formControlName="type" [options]="leaveTypeOptions"></app-dropdown>
                 </div>
                 <div class="form-group">
                     <label>Duration</label>
@@ -53,11 +33,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Start Date</label>
-                    <input type="date" formControlName="startDate" />
+                    <app-date-picker formControlName="startDate" placeholder="Select start date"></app-date-picker>
                 </div>
                 <div class="form-group">
                     <label>End Date</label>
-                    <input type="date" formControlName="endDate" />
+                    <app-date-picker formControlName="endDate" placeholder="Select end date"></app-date-picker>
                 </div>
             </div>
 
@@ -69,41 +49,27 @@
                 }
             </div>
 
-            <button type="submit" class="btn-primary" [disabled]="leaveForm.invalid">
+            <button type="submit" class="btn-primary" [disabled]="leaveForm.invalid" style="width: 100%; margin-top: 10px;">
                 Submit Request
             </button>
         </form>
-    </div>
-    }
+    </app-modal>
 
     <!-- History Table -->
     <div class="table-card">
         <h2>Leave History</h2>
-        <table class="leave-table">
-            <thead>
-                <tr>
-                    <th>Type</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Days</th>
-                    <th>Reason</th>
-                    <th>Applied</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (r of requests; track r.id) {
-                <tr>
-                    <td><span class="type-badge {{ r.type }}">{{ r.type | titlecase }}</span></td>
-                    <td>{{ r.startDate }}</td>
-                    <td>{{ r.endDate }}</td>
-                    <td>{{ r.days }}</td>
-                    <td class="reason-cell">{{ r.reason }}</td>
-                    <td>{{ r.appliedOn }}</td>
-                    <td><span class="status-badge {{ r.status }}">{{ r.status | titlecase }}</span></td>
-                </tr>
-                }
-            </tbody>
-        </table>
+        <app-table [headers]="historyHeaders">
+            @for (r of requests(); track r.id) {
+            <tr>
+                <td><span class="type-badge {{ r.type }}">{{ r.type | titlecase }}</span></td>
+                <td>{{ r.startDate | beautifulDate }}</td>
+                <td>{{ r.endDate | beautifulDate }}</td>
+                <td>{{ r.days }}</td>
+                <td class="reason-cell" [title]="r.reason">{{ r.reason }}</td>
+                <td>{{ r.appliedOn | beautifulDate }}</td>
+                <td><span class="status-badge {{ r.status }}">{{ r.status | titlecase }}</span></td>
+            </tr>
+            }
+        </app-table>
     </div>
 </div>

@@ -31,7 +31,7 @@ export const authGuard: CanActivateFn = async (route, state) => {
 
   // Logged in → block /login
   if (isLoggedIn && url === '/login') {
-    router.navigate(['/home']);
+    router.navigate(['/employee/profile']);
     return false;
   }
 

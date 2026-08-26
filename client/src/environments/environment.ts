@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000/api', // Default local URL, updated as needed
+  apiUrl: 'http://localhost:8080/api', // Point to load balancer port 8080
   apiEndpoints: {
     employees: '/employees',
     employeeMe: '/employees/me',

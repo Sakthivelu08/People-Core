@@ -1,5 +1,5 @@
 .sidebar {
-  width: 280px;
+  width: 240px;
   background-color: #0f172a;
   color: #f8fafc;
   display: flex;
@@ -106,5 +106,66 @@
     background-color: #ef4444;
     color: #fff;
     border-color: #ef4444;
+  }
+}
+
+.switch-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a7f3d0;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: rgba(167, 243, 208, 0.05);
+  transition: all 0.2s ease;
+  justify-content: center;
+
+  &:hover {
+    background-color: rgba(167, 243, 208, 0.15);
+    color: #34d399;
+  }
+
+  .material-icons-outlined {
+    font-size: 18px;
+  }
+}
+
+.sidebar.admin-sidebar {
+  border-right: 1px solid #312e81;
+  background-color: #0b0f19;
+
+  .sidebar-brand .brand-name {
+    background: linear-gradient(135deg, #a78bfa, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .sidebar-nav .nav-item {
+    color: #94a3b8;
+
+    &:hover {
+      background-color: rgba(139, 92, 246, 0.05);
+      color: #f1f5f9;
+    }
+
+    &.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(236, 72, 153, 0.1));
+      border-left: 4px solid #8b5cf6;
+      color: #c084fc;
+    }
+  }
+
+  .switch-link {
+    color: #c084fc;
+    background-color: rgba(192, 132, 252, 0.05);
+
+    &:hover {
+      background-color: rgba(192, 132, 252, 0.15);
+      color: #d8b4fe;
+    }
   }
 }

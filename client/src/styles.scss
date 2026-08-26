@@ -1,3 +1,88 @@
 /* You can add global styles to this file, and also import other style files */
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Theme Colors */
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: rgba(99, 102, 241, 0.1);
+  --primary-glow: rgba(99, 102, 241, 0.05);
+
+  --success: #10b981;
+  --success-hover: #059669;
+  --success-light: #ecfdf5;
+  --success-border: #a7f3d0;
+
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --danger-light: #fef2f2;
+  --danger-border: #fca5a5;
+
+  --warning: #f59e0b;
+  --warning-light: #fffbeb;
+  --warning-border: #fde68a;
+
+  /* Neutrals */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --border-focus: #cbd5e1;
+
+  /* Compact Typography Sizes */
+  --font-h1: 18px;
+  --font-h2: 13px;
+  --font-body: 13px;
+  --font-small: 11px;
+}
+
+html, body { height: 100%; background-color: var(--bg-main); }
+body, input, select, button, textarea { 
+  margin: 0; 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+}
+
+/* Global Compact Typography Overrides */
+.page-title {
+  font-size: var(--font-h1) !important;
+  font-weight: 600 !important;
+  color: var(--text-dark) !important;
+  margin: 0 !important;
+  letter-spacing: -0.2px;
+}
+
+h2 {
+  font-size: var(--font-h2) !important;
+  font-weight: 600 !important;
+  color: var(--text-dark) !important;
+  margin: 0 0 12px 0 !important;
+  text-transform: none;
+}
+
+/* Custom Clean Select Dropdowns */
+select {
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 14px !important;
+  padding-right: 32px !important;
+  cursor: pointer;
+  border: 1px solid var(--border) !important;
+  background-color: var(--bg-card) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-glow) !important;
+  }
+}
+
+/* Dynamic Admin/HR Theme Overrides */
+.shell.admin-theme {
+  --primary: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --primary-light: rgba(139, 92, 246, 0.1);
+  --primary-glow: rgba(139, 92, 246, 0.05);
+}

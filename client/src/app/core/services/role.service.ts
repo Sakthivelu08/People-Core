@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import { ApiService } from '../../services/api.service';
 
@@ -6,9 +6,11 @@ export type AppRole = 'Admin' | 'Employee';
 
 @Injectable({ providedIn: 'root' })
 export class RoleService {
+  private msal = inject(MsalService);
+  private api = inject(ApiService);
   private dbProfileRole: string | null = null;
 
-  constructor(private msal: MsalService, private api: ApiService) {
+  constructor() {
     this.api.getProfile().subscribe({
       next: (profile) => {
         this.dbProfileRole = profile?.role || null;

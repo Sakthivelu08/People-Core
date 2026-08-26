@@ -1,0 +1,47 @@
+<div class="date-picker-container" [class.disabled]="isDisabled()" [class.admin-theme]="theme() === 'admin'">
+    <div class="input-box" [class.open]="isOpen()" (click)="toggle()">
+        <span class="value-text">{{ formattedValue() || placeholder() }}</span>
+        <span class="material-icons-outlined calendar-icon">calendar_today</span>
+    </div>
+
+    @if (isOpen()) {
+    <div class="calendar-card">
+        <div class="calendar-header">
+            <button type="button" class="btn-nav" (click)="prevMonth($event)">
+                <span class="material-icons-outlined">chevron_left</span>
+            </button>
+            <span class="month-year-label">{{ monthNames[currentMonth()] }} {{ currentYear() }}</span>
+            <button type="button" class="btn-nav" (click)="nextMonth($event)">
+                <span class="material-icons-outlined">chevron_right</span>
+            </button>
+        </div>
+
+        <div class="weekdays-grid">
+            @for (day of weekDays; track day) {
+            <span class="weekday-item">{{ day }}</span>
+            }
+        </div>
+
+        <div class="days-grid">
+            @for (cell of daysGrid(); track cell.dateStr + $index) {
+            @if (cell.dayNumber === null) {
+            <span class="day-item empty"></span>
+            } @else {
+            <button type="button" 
+                    class="day-item" 
+                    [class.selected]="isSelected(cell.dayNumber)"
+                    [class.today]="isToday(cell.dayNumber)"
+                    (click)="selectDay(cell.dayNumber, $event)">
+                {{ cell.dayNumber }}
+            </button>
+            }
+            }
+        </div>
+
+        <div class="calendar-footer">
+            <button type="button" class="btn-footer-link" (click)="clear($event)">Clear</button>
+            <button type="button" class="btn-footer-link" (click)="setToday($event)">Today</button>
+        </div>
+    </div>
+    }
+</div>

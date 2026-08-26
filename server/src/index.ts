@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { checkConnection } from './config/db';
+import { connectRedis } from './config/redis';
 import { errorHandler } from './middlewares/error';
 import employeeRouter from './routes/employee.routes';
 import leaveRouter from './routes/leave.routes';
@@ -43,7 +44,11 @@ async function startServer() {
   console.log('[Server] Connecting to database...');
   const dbConnected = await checkConnection();
   
-  if (!dbConnected) {
+  if (dbConnected) {
+    console.log('[Server] Database connected successfully.');
+    console.log('[Server] Connecting to Redis...');
+    await connectRedis();
+  } else {
     console.error('[Server] CRITICAL: Database connection failed. Booting down...');
     process.exit(1);
   }

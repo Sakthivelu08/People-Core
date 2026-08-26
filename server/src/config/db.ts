@@ -28,15 +28,21 @@ export async function query<T = any>(sql: string, params?: any[]): Promise<T> {
   return results as T;
 }
 
-// Check database connection health
-export async function checkConnection(): Promise<boolean> {
-  try {
-    const connection = await pool.getConnection();
-    console.log('[Database] Connection verified successfully.');
-    connection.release();
-    return true;
-  } catch (error: any) {
-    console.error('[Database] Connection failed:', error.message);
-    return false;
+// Check database connection health with retry logic
+export async function checkConnection(retries: number = 5, delayMs: number = 3000): Promise<boolean> {
+  for (let i = 1; i <= retries; i++) {
+    try {
+      const connection = await pool.getConnection();
+      console.log('[Database] Connection verified successfully.');
+      connection.release();
+      return true;
+    } catch (error: any) {
+      console.error(`[Database] Connection attempt ${i}/${retries} failed:`, error.message);
+      if (i < retries) {
+        console.log(`[Database] Retrying in ${delayMs / 1000} seconds...`);
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
   }
+  return false;
 }

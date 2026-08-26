@@ -1,0 +1,15 @@
+@if (isOpen()) {
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+    <div class="modal-container animated">
+        <div class="modal-header">
+            <h2 class="modal-title">{{ title() }}</h2>
+            <button type="button" class="btn-close" (click)="onClose()">
+                <span class="material-icons-outlined">close</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>
+}
