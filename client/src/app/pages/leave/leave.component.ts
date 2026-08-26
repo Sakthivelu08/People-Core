@@ -1,26 +1,52 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LeaveService } from '../../core/services/leave.service';
 import { LeaveRequest, LeaveBalance } from '../../core/models/leave.model';
+import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
+import { DatePickerComponent } from '../../shared/components/date-picker/date-picker.component';
+import { MetricCardComponent } from '../../shared/components/metric-card/metric-card.component';
+import { TableComponent } from '../../shared/components/table/table.component';
+import { BeautifulDatePipe } from '../../shared/pipes/beautiful-date.pipe';
+import { ModalComponent } from '../../shared/components/modal/modal.component';
+import { SnackbarService } from '../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-leave',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DropdownComponent,
+    DatePickerComponent,
+    MetricCardComponent,
+    TableComponent,
+    BeautifulDatePipe,
+    ModalComponent
+  ],
   templateUrl: './leave.component.html',
   styleUrls: ['./leave.component.scss'],
 })
 export class LeaveComponent implements OnInit {
-  requests: LeaveRequest[] = [];
-  balance!: LeaveBalance;
-  showForm = false;
-  submitSuccess = false;
-  constructor(private leaveService: LeaveService, private fb: FormBuilder) {}
+  requests = signal<LeaveRequest[]>([]);
+  balance = signal<LeaveBalance | null>(null);
+  showForm = signal<boolean>(false);
+
+  historyHeaders = ['Type', 'From', 'To', 'Days', 'Reason', 'Applied', 'Status'];
+
+  leaveTypeOptions = [
+    { value: 'annual', label: 'Annual' },
+    { value: 'sick', label: 'Sick' },
+    { value: 'casual', label: 'Casual' }
+  ];
+
+  private leaveService = inject(LeaveService);
+  private fb = inject(FormBuilder);
+  private snackbar = inject(SnackbarService);
 
   leaveForm!: ReturnType<FormBuilder['group']>;
 
-    ngOnInit() {
+  ngOnInit() {
     this.leaveForm = this.fb.group({
       type:      ['annual', Validators.required],
       startDate: ['', Validators.required],
@@ -32,11 +58,14 @@ export class LeaveComponent implements OnInit {
 
   load() {
     this.leaveService.getAll().subscribe({
-      next: (reqs) => this.requests = reqs,
-      error: (err) => console.error('Failed to get leaves:', err)
+      next: (reqs) => this.requests.set(reqs),
+      error: (err) => {
+        console.error('Failed to get leaves:', err);
+        this.snackbar.error('Failed to load leave history.');
+      }
     });
     this.leaveService.getBalance().subscribe({
-      next: (bal) => this.balance = bal,
+      next: (bal) => this.balance.set(bal),
       error: (err) => console.error('Failed to get balance:', err)
     });
   }
@@ -60,12 +89,14 @@ export class LeaveComponent implements OnInit {
     }).subscribe({
       next: () => {
         this.leaveForm.reset({ type: 'annual' });
-        this.showForm = false;
-        this.submitSuccess = true;
+        this.showForm.set(false);
+        this.snackbar.success('Leave request submitted successfully!');
         this.load();
-        setTimeout(() => (this.submitSuccess = false), 3000);
       },
-      error: (err) => console.error('Failed to submit leave:', err)
+      error: (err) => {
+        console.error('Failed to submit leave:', err);
+        this.snackbar.error('Failed to submit leave request.');
+      }
     });
   }
 }

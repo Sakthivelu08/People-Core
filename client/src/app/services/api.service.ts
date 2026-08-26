@@ -1,16 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { API_CONFIG } from '../core/constants/config.constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = environment.apiUrl;
-  private endpoints = environment.apiEndpoints;
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private baseUrl = API_CONFIG.baseUrl;
+  private endpoints = API_CONFIG.endpoints;
 
   // --- Employees ---
   getProfile(): Observable<any> {

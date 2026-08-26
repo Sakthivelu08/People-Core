@@ -14,14 +14,20 @@ export const routes: Routes = [
       import("./auth/login/login.component").then(m => m.LoginComponent),
     canActivate: [authGuard]
   },
+  // --- Employee Portal Layout ---
   {
-    path: "",
+    path: "employee",
     loadComponent: () =>
       import("./shared/layout/shell/shell.component").then(m => m.ShellComponent),
     canActivate: [authGuard],
     children: [
       {
-        path: "home",
+        path: "",
+        redirectTo: "profile",
+        pathMatch: "full"
+      },
+      {
+        path: "profile",
         loadComponent: () =>
           import("./pages/home/home.component").then(m => m.HomeComponent),
       },
@@ -34,24 +40,45 @@ export const routes: Routes = [
         path: "onboarding",
         loadComponent: () =>
           import("./pages/onboarding/onboarding.component").then(m => m.OnboardingComponent),
+      }
+    ]
+  },
+  // --- HR Admin Portal Layout ---
+  {
+    path: "admin",
+    loadComponent: () =>
+      import("./shared/layout/shell/shell.component").then(m => m.ShellComponent),
+    canActivate: [authGuard, adminGuard],
+    children: [
+      {
+        path: "",
+        redirectTo: "dashboard",
+        pathMatch: "full"
+      },
+      {
+        path: "dashboard",
+        loadComponent: () =>
+          import("./pages/admin/admin-dashboard/admin-dashboard.component").then(m => m.AdminDashboardComponent),
+      },
+      {
+        path: "onboarding",
+        loadComponent: () =>
+          import("./pages/admin/onboarding-mgmt/onboarding-mgmt.component").then(m => m.OnboardingMgmtComponent),
       },
       {
         path: "insights",
         loadComponent: () =>
           import("./pages/insights/insights.component").then(m => m.InsightsComponent),
-        canActivate: [adminGuard],
       },
       {
-        path: "admin/onboarding",
+        path: "employees/add",
         loadComponent: () =>
-          import("./pages/admin/onboarding-mgmt/onboarding-mgmt.component")
-            .then(m => m.OnboardingMgmtComponent),
-        canActivate: [adminGuard],
-      },
+          import("./pages/admin/add-employee/add-employee.component").then(m => m.AddEmployeeComponent),
+      }
     ]
   },
   {
     path: "**",
-    redirectTo: "login"
+    redirectTo: "employee/profile"
   }
 ];

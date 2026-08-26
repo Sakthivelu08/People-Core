@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OnboardingService } from '../../core/services/onboarding.service';
 import { OnboardingTask, TaskCategory } from '../../core/models/onboarding.model';
+import { BeautifulDatePipe } from '../../shared/pipes/beautiful-date.pipe';
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BeautifulDatePipe],
   templateUrl: './onboarding.component.html',
   styleUrls: ['./onboarding.component.scss'],
 })
 export class OnboardingComponent implements OnInit {
-  tasks: OnboardingTask[] = [];
+  tasks = signal<OnboardingTask[]>([]);
   categories: TaskCategory[] = ['documents', 'orientation', 'setup', 'training'];
 
-  constructor(private onboardingService: OnboardingService) {}
+  private onboardingService = inject(OnboardingService);
 
   ngOnInit() {
     this.load();
@@ -22,17 +23,17 @@ export class OnboardingComponent implements OnInit {
 
   load() {
     this.onboardingService.getTasks().subscribe({
-      next: (tasks) => this.tasks = tasks,
+      next: (tasks) => this.tasks.set(tasks),
       error: (err) => console.error('Failed to get tasks:', err)
     });
   }
 
   get progress(): number {
-    return this.onboardingService.getProgress(this.tasks);
+    return this.onboardingService.getProgress(this.tasks());
   }
 
   getTasksByCategory(cat: TaskCategory): OnboardingTask[] {
-    return this.tasks.filter(t => t.category === cat);
+    return this.tasks().filter(t => t.category === cat);
   }
 
   toggle(taskId: string) {
@@ -42,13 +43,13 @@ export class OnboardingComponent implements OnInit {
     });
   }
     
-        get completedCount(): number {
-    return this.tasks.filter(t => t.completed).length;
-    }
+  get completedCount(): number {
+    return this.tasks().filter(t => t.completed).length;
+  }
 
-    isOverdue(task: OnboardingTask): boolean {
+  isOverdue(task: OnboardingTask): boolean {
     return !task.completed && new Date(task.dueDate) < new Date();
-    }
+  }
 
   categoryLabel(cat: TaskCategory): string {
     const map: Record<TaskCategory, string> = {

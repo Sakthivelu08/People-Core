@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AttritionInsight, EngagementInsight } from '../models/insight.model';
@@ -6,7 +6,7 @@ import { ApiService } from '../../services/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class InsightsService {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   getAttritionInsights(): Observable<AttritionInsight[]> {
     return this.api.getAttritionRisk().pipe(

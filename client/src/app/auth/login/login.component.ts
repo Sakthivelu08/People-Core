@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   MsalService,
   MSAL_GUARD_CONFIG,
@@ -14,14 +14,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  constructor(
-    private msal: MsalService,
-    private router: Router,
-    @Inject(MSAL_GUARD_CONFIG) private guardConfig: MsalGuardConfiguration
-  ) {
+  private msal = inject(MsalService);
+  private router = inject(Router);
+  private guardConfig = inject<MsalGuardConfiguration>(MSAL_GUARD_CONFIG);
+
+  constructor() {
     const account = this.msal.instance.getActiveAccount();
     if (account) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/employee/profile']);
     }
   }
 

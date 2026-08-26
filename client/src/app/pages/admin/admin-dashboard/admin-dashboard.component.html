@@ -1,0 +1,90 @@
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">HR Admin Dashboard</h1>
+        <button class="btn-refresh" (click)="loadData()" [disabled]="loading()">
+            <span class="material-icons-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">sync</span> Refresh Metrics
+        </button>
+    </div>
+
+    @if (loading()) {
+    <div class="loading-state">Loading HR consolidated metrics...</div>
+    } @else {
+    <!-- Dashboard Stats Grid -->
+    <div class="stats-grid">
+        <app-metric-card label="Total Employees" [value]="stats().totalEmployees" icon="people" variant="primary"></app-metric-card>
+        <app-metric-card label="Pending Leaves" [value]="stats().pendingLeaves" icon="pending_actions" variant="success"></app-metric-card>
+        <app-metric-card label="High Attrition Risks" [value]="stats().highRiskCount" icon="warning" variant="danger"></app-metric-card>
+        <app-metric-card label="Open Onboarding Tasks" [value]="stats().onboardingOpen" icon="assignment_late" variant="warning"></app-metric-card>
+    </div>
+
+    <!-- Admin Workflows Section -->
+    <div class="dashboard-sections">
+        <!-- Leave Approvals Management -->
+        <div class="table-card">
+            <h2>Pending Leave Requests</h2>
+            @if (pendingLeavesList().length === 0) {
+            <div class="empty-state">
+                <span class="material-icons-outlined" style="font-size: 20px; color: #10b981; vertical-align: middle; margin-right: 6px;">check_circle</span>
+                No pending leave requests to review!
+            </div>
+            } @else {
+            <app-table [headers]="leaveHeaders">
+                @for (r of pendingLeavesList(); track r.id) {
+                <tr>
+                    <td>
+                        <div class="emp-meta">
+                            <span class="emp-name">{{ r.employee_name }}</span>
+                            <span class="emp-email">{{ r.employee_email }}</span>
+                        </div>
+                    </td>
+                    <td><span class="type-badge {{ r.type }}">{{ r.type | titlecase }}</span></td>
+                    <td>
+                        <div class="duration-meta">
+                            <strong>{{ r.days }} day{{ r.days !== 1 ? 's' : '' }}</strong>
+                            <span class="dates">{{ r.start_date | beautifulDate }} to {{ r.end_date | beautifulDate }}</span>
+                        </div>
+                    </td>
+                    <td class="reason-cell">{{ r.reason }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-approve" (click)="approveLeave(r.id)">Approve</button>
+                            <button class="btn-reject" (click)="rejectLeave(r.id)">Reject</button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </app-table>
+            }
+        </div>
+
+        <!-- Attrition Risk Profiles -->
+        <div class="table-card" style="margin-top: 30px;">
+            <h2>High Attrition Risk Profiles (ML Signals)</h2>
+            @if (highRiskEmployees().length === 0) {
+            <div class="empty-state">
+                <span class="material-icons-outlined" style="font-size: 20px; color: #10b981; vertical-align: middle; margin-right: 6px;">check_circle</span>
+                No employees currently flagged as high attrition risk.
+            </div>
+            } @else {
+            <app-table [headers]="riskHeaders">
+                @for (r of highRiskEmployees(); track r.id) {
+                <tr>
+                    <td><strong>{{ r.employee_name }}</strong></td>
+                    <td>{{ r.department }}</td>
+                    <td>
+                        <div class="risk-bar-container">
+                            <span class="risk-percentage">{{ r.risk_score }}%</span>
+                            <div class="risk-bar">
+                                <div class="risk-bar-fill" [style.width.%]="r.risk_score"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="factor-badge">{{ r.key_factors }}</span></td>
+                </tr>
+                }
+            </app-table>
+            }
+        </div>
+    </div>
+    }
+</div>

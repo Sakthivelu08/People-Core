@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MsalService } from '@azure/msal-angular';
 import { RoleService } from '../../../core/services/role.service';
@@ -8,8 +8,7 @@ interface NavItem {
   path: string;
   label: string;
   icon: string;
-  adminOnly?: boolean;
-}
+} 
 
 @Component({
   selector: 'app-sidebar',
@@ -19,28 +18,42 @@ interface NavItem {
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent implements OnInit {
-  isAdmin = false;
+  isAdmin = signal<boolean>(false);
 
-  allNavItems: NavItem[] = [
-    { path: '/home',             label: 'My Profile',       icon: 'account_circle'  },
-    { path: '/leave',            label: 'Leave Tracker',    icon: 'date_range'      },
-    { path: '/onboarding',       label: 'My Onboarding',    icon: 'assignment'      },
-    { path: '/admin/onboarding', label: 'Onboarding Mgmt',  icon: 'admin_panel_settings', adminOnly: true },
-    { path: '/insights',         label: 'AI Insights',      icon: 'auto_awesome',         adminOnly: true },
-  ];
-
-  get navItems(): NavItem[] {
-    return this.allNavItems.filter(i => !i.adminOnly || this.isAdmin);
-    }
-    
-    get employeeNavItems() { return this.allNavItems.filter(i => !i.adminOnly); }
-get adminNavItems()    { return this.allNavItems.filter(i => i.adminOnly); }
-
-  constructor(private msal: MsalService, private roleService: RoleService) {}
+  private msal = inject(MsalService);
+  private roleService = inject(RoleService);
+  private router = inject(Router);
 
   ngOnInit() {
-    this.isAdmin = this.roleService.isAdmin();
+    this.isAdmin.set(this.roleService.isAdmin());
   }
 
-  logout() { this.msal.logoutRedirect(); }
+  get isAdminMode(): boolean {
+    return this.router.url.startsWith('/admin');
+  }
+
+  get portalTitle(): string {
+    return this.isAdminMode ? 'PeopleCore Admin' : 'PeopleCore Portal';
+  }
+
+  get navItems(): NavItem[] {
+    if (this.isAdminMode) {
+      return [
+        { path: '/admin/dashboard',  label: 'HR Dashboard',      icon: 'dashboard'               },
+        { path: '/admin/onboarding', label: 'Onboarding Mgmt',   icon: 'admin_panel_settings'    },
+        { path: '/admin/insights',   label: 'AI Insights',       icon: 'auto_awesome'            },
+        { path: '/admin/employees/add', label: 'Add Employee',    icon: 'person_add'              },
+      ];
+    } else {
+      return [
+        { path: '/employee/profile', label: 'My Profile',        icon: 'account_circle'          },
+        { path: '/employee/leave',   label: 'Leave Tracker',     icon: 'date_range'              },
+        { path: '/employee/onboarding', label: 'My Onboarding',  icon: 'assignment'              },
+      ];
+    }
+  }
+
+  logout() {
+    this.msal.logoutRedirect();
+  }
 }

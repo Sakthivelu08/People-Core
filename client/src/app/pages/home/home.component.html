@@ -5,20 +5,20 @@
   </div>
 </header>
 
-@if (profile) {
+@if (profile()) {
   <div class="profile-card">
     <div class="profile-card-header">
       <div class="profile-avatar-large">
-        @if (photoUrl) {
-          <img [src]="photoUrl" alt="Large profile photo" />
+        @if (photoUrl()) {
+          <img [src]="photoUrl()" alt="Large profile photo" />
         } @else {
-          <div class="large-placeholder">{{ profile.displayName?.charAt(0) }}</div>
+          <div class="large-placeholder">{{ profile().displayName?.charAt(0) }}</div>
         }
       </div>
       <div class="profile-title-area">
-        <h2>{{ profile.displayName }}</h2>
-        <p class="role-badge" [class.admin]="isAdmin">{{ dbProfile?.role || 'Employee' }}</p>
-        <p class="email">{{ profile.mail || profile.userPrincipalName }}</p>
+        <h2>{{ profile().displayName }}</h2>
+        <p class="role-badge" [class.admin]="isAdmin">{{ dbProfile()?.role || 'Employee' }}</p>
+        <p class="email">{{ profile().mail || profile().userPrincipalName }}</p>
       </div>
     </div>
 
@@ -27,39 +27,39 @@
         <h3>Workplace Information</h3>
         <div class="info-row">
           <span class="label">Job Title</span>
-          <span class="value">{{ dbProfile?.job_title || profile.jobTitle || 'N/A' }}</span>
+          <span class="value">{{ dbProfile()?.job_title || profile().jobTitle || 'N/A' }}</span>
         </div>
         <div class="info-row">
           <span class="label">Department</span>
-          <span class="value">{{ dbProfile?.department || profile.department || 'N/A' }}</span>
+          <span class="value">{{ dbProfile()?.department || profile().department || 'N/A' }}</span>
         </div>
         <div class="info-row">
           <span class="label">Office Location</span>
-          <span class="value">{{ dbProfile?.office_location || profile.officeLocation || 'N/A' }}</span>
+          <span class="value">{{ dbProfile()?.office_location || profile().officeLocation || 'N/A' }}</span>
         </div>
         <div class="info-row">
           <span class="label">Join Date</span>
-          <span class="value">{{ dbProfile?.join_date ? (dbProfile.join_date | date:'longDate') : 'N/A' }}</span>
+          <span class="value">{{ dbProfile()?.join_date ? (dbProfile().join_date | date:'longDate') : 'N/A' }}</span>
         </div>
       </div>
 
       <div class="info-card">
-        <h3>Contact & System Details</h3>
+        <h3>Contact &amp; System Details</h3>
         <div class="info-row">
           <span class="label">Mobile Phone</span>
-          <span class="value">{{ dbProfile?.mobile_phone || profile.businessPhones?.[0] || 'N/A' }}</span>
+          <span class="value">{{ dbProfile()?.mobile_phone || profile().businessPhones?.[0] || 'N/A' }}</span>
         </div>
         <div class="info-row">
           <span class="label">Status</span>
-          <span class="value status-pill" [class]="dbProfile?.status">{{ dbProfile?.status || 'active' }}</span>
+          <span class="value status-pill" [class]="dbProfile()?.status">{{ dbProfile()?.status || 'active' }}</span>
         </div>
         <div class="info-row">
           <span class="label">Azure OID</span>
-          <span class="value code-font">{{ dbProfile?.azure_oid || profile.id }}</span>
+          <span class="value code-font">{{ dbProfile()?.azure_oid || profile().id }}</span>
         </div>
         <div class="info-row">
           <span class="label">User Principal Name</span>
-          <span class="value">{{ profile.userPrincipalName }}</span>
+          <span class="value">{{ profile().userPrincipalName }}</span>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
       <div class="security-card">
         <h3>Assigned Groups</h3>
         <div class="pills-container">
-          @for (g of groups; track g.id) {
+          @for (g of groups(); track g.id) {
             <span class="pill-badge group-badge">{{ g.displayName }}</span>
           } @empty {
             <p class="no-data">No group assignments resolved.</p>
@@ -79,7 +79,7 @@
       <div class="security-card">
         <h3>Azure Directory Roles</h3>
         <div class="pills-container">
-          @for (r of roles; track r) {
+          @for (r of roles(); track r) {
             <span class="pill-badge role-badge">{{ r }}</span>
           } @empty {
             <p class="no-data">No custom application roles in token.</p>

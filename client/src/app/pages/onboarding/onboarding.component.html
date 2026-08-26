@@ -9,7 +9,7 @@
         <div class="progress-header">
             <div>
                 <div class="progress-label">Overall Progress</div>
-                <div class="progress-count">{{ completedCount }} of {{ tasks.length }} tasks completed</div>
+                <div class="progress-count">{{ completedCount }} of {{ tasks().length }} tasks completed</div>
             </div>
             <div class="progress-percent">{{ progress }}%</div>
         </div>
@@ -36,7 +36,7 @@
                     <div class="task-desc">{{ task.description }}</div>
                 </div>
                 <div class="task-due" [class.overdue]="isOverdue(task)">
-                    Due: {{ task.dueDate }}
+                    Due: {{ task.dueDate | beautifulDate }}
                 </div>
             </div>
             }

@@ -1,0 +1,85 @@
+.metric-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+
+  .metric-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .metric-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .metric-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.2;
+  }
+
+  /* Admin/Dashboard stats icons coloring */
+  &.primary .metric-icon {
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  &.success .metric-icon {
+    background: var(--success-light);
+    color: var(--success);
+  }
+  &.warning .metric-icon {
+    background: var(--warning-light);
+    color: #b45309;
+  }
+  &.danger .metric-icon {
+    background: var(--danger-light);
+    color: var(--danger);
+  }
+
+  /* Employee Leave Balance card variants (Border-left indicator, column layout) */
+  &.annual,
+  &.sick,
+  &.casual {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    border-left: 4px solid transparent;
+
+    .metric-value {
+      font-size: 24px;
+    }
+  }
+
+  &.annual {
+    border-left-color: var(--primary);
+  }
+  &.sick {
+    border-left-color: var(--success);
+  }
+  &.casual {
+    border-left-color: var(--warning);
+  }
+}

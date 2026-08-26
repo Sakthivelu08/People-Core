@@ -1,0 +1,11 @@
+<div class="snackbar-container">
+    @for (alert of alerts(); track alert.id) {
+    <div class="snackbar-card animated" [class]="alert.type">
+        <span class="material-icons-outlined alert-icon">{{ alert.icon }}</span>
+        <span class="alert-message">{{ alert.message }}</span>
+        <button type="button" class="btn-close" (click)="dismiss(alert.id)">
+            <span class="material-icons-outlined">close</span>
+        </button>
+    </div>
+    }
+</div>

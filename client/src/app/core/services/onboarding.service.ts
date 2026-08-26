@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { OnboardingTask } from '../models/onboarding.model';
@@ -6,7 +6,7 @@ import { ApiService } from '../../services/api.service';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
-  constructor(private api: ApiService) {}
+  private api = inject(ApiService);
 
   addEmployee(employee: { name: string; email: string; join_date: string; job_title?: string; department?: string; role?: string }): Observable<any> {
     return this.api.registerEmployee({

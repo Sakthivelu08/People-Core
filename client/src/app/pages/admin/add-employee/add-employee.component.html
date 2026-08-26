@@ -1,0 +1,55 @@
+<div class="page">
+    <div class="page-header">
+        <h1 class="page-title">Add New Employee</h1>
+    </div>
+
+
+    <!-- Form Layout Card -->
+    <div class="form-card">
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input id="name" type="text" formControlName="name" placeholder="John Doe" />
+                    @if (employeeForm.get('name')?.touched && employeeForm.get('name')?.invalid) {
+                    <span class="error-msg">Please enter a valid alphabetic name</span>
+                    }
+                </div>
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input id="email" type="email" formControlName="email" placeholder="john.doe@domain.com" />
+                    @if (employeeForm.get('email')?.touched && employeeForm.get('email')?.invalid) {
+                    <span class="error-msg">Please enter a valid email address</span>
+                    }
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title</label>
+                    <input id="jobTitle" type="text" formControlName="jobTitle" placeholder="e.g. Software Engineer" />
+                    @if (employeeForm.get('jobTitle')?.touched && employeeForm.get('jobTitle')?.invalid) {
+                    <span class="error-msg">Job title is required</span>
+                    }
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <app-dropdown id="department" formControlName="department" [options]="departmentOptions"></app-dropdown>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group select-half">
+                    <label for="role">System Access Role</label>
+                    <app-dropdown id="role" formControlName="role" [options]="roleOptions"></app-dropdown>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit" [disabled]="employeeForm.invalid || submitting()">
+                    {{ submitting() ? 'Adding Employee...' : 'Register Employee' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

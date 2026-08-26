@@ -9,17 +9,17 @@
                 <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">auto_awesome</span>
                 AI Generated
             </div>
-            <button class="regenerate-btn" (click)="regenerate()" [disabled]="isGenerating">
+            <button class="regenerate-btn" (click)="regenerate()" [disabled]="isGenerating()">
                 <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">refresh</span>
-                {{ isGenerating ? 'Generating...' : 'Regenerate' }}
+                {{ isGenerating() ? 'Generating...' : 'Regenerate' }}
             </button>
         </div>
-        @if (isGenerating) {
+        @if (isGenerating()) {
         <div class="generating-pulse">
             <span></span><span></span><span></span>
         </div>
         } @else {
-        <p class="narrative-text">{{ narrative }}</p>
+        <p class="narrative-text">{{ narrative() }}</p>
         }
     </div>
 
@@ -28,7 +28,7 @@
         <div class="insight-card">
             <h2>Attrition Risk</h2>
             <div class="risk-list">
-                @for (a of attritionData; track a.name) {
+                @for (a of attritionData(); track a.name) {
                 <div class="risk-row">
                     <div class="risk-info">
                         <div class="risk-name">{{ a.name }}</div>
@@ -52,7 +52,7 @@
         <div class="insight-card">
             <h2>Engagement by Department</h2>
             <div class="engagement-list">
-                @for (e of engagementData; track e.department) {
+                @for (e of engagementData(); track e.department) {
                 <div class="engagement-row">
                     <div class="eng-dept">{{ e.department }}</div>
                     <div class="eng-bar-wrap">

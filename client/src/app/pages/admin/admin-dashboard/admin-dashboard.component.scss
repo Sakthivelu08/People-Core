@@ -1,0 +1,260 @@
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  }
+
+  .stat-icon {
+    font-family: 'Material Icons Outlined';
+    font-size: 20px;
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .employee-icon {
+    background-color: var(--primary-light);
+    color: var(--primary);
+  }
+
+  .leave-icon {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+  }
+
+  .risk-icon {
+    background-color: var(--danger-light);
+    color: var(--danger);
+  }
+
+  .task-icon {
+    background-color: var(--success-light);
+    color: var(--success);
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1;
+
+      &.highlight {
+        color: var(--warning);
+      }
+
+      &.danger {
+        color: var(--danger);
+      }
+    }
+  }
+}
+
+.btn-refresh {
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    border-color: var(--border-focus);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.table-card {
+  background: var(--bg-card);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 2px solid var(--border);
+    background-color: var(--bg-main);
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-dark);
+    vertical-align: middle;
+  }
+}
+
+.emp-meta {
+  display: flex;
+  flex-direction: column;
+
+  .emp-name {
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .emp-email {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+}
+
+.duration-meta {
+  display: flex;
+  flex-direction: column;
+
+  .dates {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-approve {
+  background-color: var(--success);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--success-hover);
+  }
+}
+
+.btn-reject {
+  background-color: var(--danger);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--danger-hover);
+  }
+}
+
+.risk-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .risk-percentage {
+    font-weight: 600;
+    width: 45px;
+    color: var(--danger);
+  }
+
+  .risk-bar {
+    flex: 1;
+    height: 8px;
+    background-color: var(--danger-light);
+    border-radius: 4px;
+    overflow: hidden;
+    max-width: 150px;
+
+    .risk-bar-fill {
+      height: 100%;
+      background-color: var(--danger);
+      border-radius: 4px;
+    }
+  }
+}
+
+.factor-badge {
+  background-color: var(--bg-main);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  border: 1px solid var(--border);
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 20px;
+  background-color: var(--bg-main);
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+}

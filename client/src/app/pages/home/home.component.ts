@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MsalService } from '@azure/msal-angular';
@@ -12,30 +12,28 @@ import { ApiService } from '../../services/api.service';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  profile: any;
-  photoUrl: string | null = null;
-  groups: any[] = [];
-  roles: any[] = [];
-  dbProfile: any = null;
+  profile = signal<any>(null);
+  photoUrl = signal<string | null>(null);
+  groups = signal<any[]>([]);
+  roles = signal<string[]>([]);
+  dbProfile = signal<any>(null);
 
-  constructor(
-    private http: HttpClient,
-    private msal: MsalService,
-    private api: ApiService
-  ) {}
+  private http = inject(HttpClient);
+  private msal = inject(MsalService);
+  private api = inject(ApiService);
 
   async ngOnInit() {
     const account = this.msal.instance.getActiveAccount();
     if (!account) return;
 
-    this.roles = account.idTokenClaims?.roles as string[] || [];
+    this.roles.set(account.idTokenClaims?.roles as string[] || []);
 
     this.fetchGraphProfile(account);
     this.fetchDbProfile();
   }
 
   get isAdmin(): boolean {
-    return this.roles.includes('Admin') || (this.dbProfile && this.dbProfile.role === 'Admin');
+    return this.roles().includes('Admin') || (this.dbProfile() && this.dbProfile().role === 'Admin');
   }
 
   async fetchGraphProfile(account: any) {
@@ -49,20 +47,20 @@ export class HomeComponent implements OnInit {
 
       this.http.get('https://graph.microsoft.com/v1.0/me', { headers })
         .subscribe((data: any) => {
-          this.profile = data;
+          this.profile.set(data);
         });
 
       this.http.get('https://graph.microsoft.com/v1.0/me/photo/$value', { headers, responseType: 'blob' })
         .subscribe({
           next: (blob) => {
-            this.photoUrl = URL.createObjectURL(blob);
+            this.photoUrl.set(URL.createObjectURL(blob));
           },
-          error: () => (this.photoUrl = null)
+          error: () => this.photoUrl.set(null)
         });
 
       this.http.get('https://graph.microsoft.com/v1.0/me/memberOf', { headers })
-        .subscribe((groups: any) => {
-          this.groups = groups.value || [];
+        .subscribe((groupsData: any) => {
+          this.groups.set(groupsData.value || []);
         });
     } catch (err) {
       console.error('Error fetching Graph API details:', err);
@@ -72,7 +70,7 @@ export class HomeComponent implements OnInit {
   fetchDbProfile() {
     this.api.getProfile().subscribe({
       next: (data) => {
-        this.dbProfile = data;
+        this.dbProfile.set(data);
       },
       error: (err) => console.error('Failed to load DB profile:', err)
     });

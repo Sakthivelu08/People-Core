@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { RedirectHandlerComponent } from './auth/redirect-handler.component';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
@@ -13,11 +13,8 @@ import { filter } from 'rxjs/operators';
 })
   
 export class AppComponent implements OnInit {
-
-  constructor(
-    private msal: MsalService,
-    private msalBroadcast: MsalBroadcastService
-  ) {}
+  private msal = inject(MsalService);
+  private msalBroadcast = inject(MsalBroadcastService);
 
   ngOnInit() {
 

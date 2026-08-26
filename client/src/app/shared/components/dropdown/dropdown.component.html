@@ -1,0 +1,18 @@
+<div class="dropdown-container" [class.disabled]="isDisabled()">
+    <div class="selected-box" [class.open]="isOpen()" (click)="toggle()">
+        <span class="selected-text">{{ selectedLabel() }}</span>
+        <span class="material-icons-outlined arrow-icon">expand_more</span>
+    </div>
+
+    @if (isOpen()) {
+    <div class="dropdown-menu">
+        @for (opt of options(); track opt.value) {
+        <div class="option-item" 
+             [class.selected]="opt.value === value()" 
+             (click)="select(opt.value, $event)">
+            {{ opt.label }}
+        </div>
+        }
+    </div>
+    }
+</div>

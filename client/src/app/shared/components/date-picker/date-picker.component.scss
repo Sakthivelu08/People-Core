@@ -1,0 +1,194 @@
+.date-picker-container {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.input-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--border-focus);
+  }
+
+  &.open {
+    border-color: var(--primary);
+    background-color: var(--bg-card);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+
+  .value-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .calendar-icon {
+    font-size: 18px;
+    color: var(--text-muted);
+  }
+}
+
+.calendar-card {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 240px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  z-index: 200;
+  box-sizing: border-box;
+  padding: 12px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  .month-year-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .btn-nav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+    }
+
+    .material-icons-outlined {
+      font-size: 18px;
+    }
+  }
+}
+
+.weekdays-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+  text-align: center;
+
+  .weekday-item {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+
+  .day-item {
+    background: none;
+    border: none;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-dark);
+    padding: 6px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+    transition: background-color 0.1s ease, color 0.1s ease;
+
+    &:hover:not(.empty):not(.selected) {
+      background-color: var(--bg-main);
+    }
+
+    &.selected {
+      background-color: var(--primary);
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    &.today:not(.selected) {
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-weight: 600;
+      padding: 5px 0; /* Adjust for border width */
+    }
+
+    &.empty {
+      cursor: default;
+      pointer-events: none;
+    }
+  }
+}
+
+.calendar-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+
+  .btn-footer-link {
+    background: none;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Admin / HR Portal Theme Modifier */
+.date-picker-container.admin-theme {
+  .input-box.open {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.05);
+  }
+
+  .days-grid .day-item {
+    &.selected {
+      background-color: #8b5cf6;
+    }
+
+    &.today:not(.selected) {
+      border-color: #8b5cf6;
+      color: #8b5cf6;
+    }
+  }
+
+  .calendar-footer .btn-footer-link {
+    color: #8b5cf6;
+  }
+}

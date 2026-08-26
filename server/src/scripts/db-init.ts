@@ -12,7 +12,7 @@ const user = process.env.DB_USER || 'root';
 const password = process.env.DB_PASSWORD || '';
 const database = process.env.DB_NAME || 'peoplecore';
 
-async function main() {
+export async function initDb() {
   console.log('[DB-Init] Connecting to MySQL server to check/initialize database...');
   
   // 1. Connect without database to create it if it doesn't exist
@@ -128,6 +128,15 @@ async function main() {
     );
   `);
 
+  // Create narrative_insights table
+  await dbConnection.query(`
+    CREATE TABLE IF NOT EXISTS narrative_insights (
+      id              CHAR(36)        PRIMARY KEY DEFAULT (UUID()),
+      narrative       TEXT            NOT NULL,
+      generated_at    DATETIME        DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
   console.log('[DB-Init] Seeding initial data if tables are empty...');
 
   // Check if we already have employees
@@ -207,7 +216,9 @@ async function main() {
   console.log('[DB-Init] Initialization finished successfully!');
 }
 
-main().catch((err) => {
-  console.error('[DB-Init] Initialization failed:', err);
-  process.exit(1);
-});
+if (require.main === module) {
+  initDb().catch((err) => {
+    console.error('[DB-Init] Initialization failed:', err);
+    process.exit(1);
+  });
+}

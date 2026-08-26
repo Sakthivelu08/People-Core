@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InsightsService } from '../../core/services/insights.service';
 import { AttritionInsight, EngagementInsight } from '../../core/models/insight.model';
@@ -11,12 +11,12 @@ import { AttritionInsight, EngagementInsight } from '../../core/models/insight.m
   styleUrls: ['./insights.component.scss'],
 })
 export class InsightsComponent implements OnInit {
-  attritionData: AttritionInsight[] = [];
-  engagementData: EngagementInsight[] = [];
-  narrative = '';
-  isGenerating = false;
+  attritionData = signal<AttritionInsight[]>([]);
+  engagementData = signal<EngagementInsight[]>([]);
+  narrative = signal<string>('');
+  isGenerating = signal<boolean>(false);
 
-  constructor(private insightsService: InsightsService) {}
+  private insightsService = inject(InsightsService);
 
   ngOnInit() {
     this.load();
@@ -24,30 +24,30 @@ export class InsightsComponent implements OnInit {
 
   load() {
     this.insightsService.getAttritionInsights().subscribe({
-      next: (data) => this.attritionData = data,
+      next: (data) => this.attritionData.set(data),
       error: (err) => console.error('Failed to get attrition risk:', err)
     });
     this.insightsService.getEngagementInsights().subscribe({
-      next: (data) => this.engagementData = data,
+      next: (data) => this.engagementData.set(data),
       error: (err) => console.error('Failed to get engagement:', err)
     });
     this.insightsService.getAiNarrative().subscribe({
-      next: (data) => this.narrative = data,
+      next: (data) => this.narrative.set(data),
       error: (err) => console.error('Failed to get narrative:', err)
     });
   }
 
   regenerate() {
-    this.isGenerating = true;
-    this.narrative = '';
+    this.isGenerating.set(true);
+    this.narrative.set('');
     this.insightsService.getAiNarrative().subscribe({
       next: (data) => {
-        this.narrative = data;
-        this.isGenerating = false;
+        this.narrative.set(data);
+        this.isGenerating.set(false);
       },
       error: (err) => {
         console.error('Failed to regenerate narrative:', err);
-        this.isGenerating = false;
+        this.isGenerating.set(false);
       }
     });
   }
