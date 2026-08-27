@@ -14,7 +14,6 @@ export const routes: Routes = [
       import("./auth/login/login.component").then(m => m.LoginComponent),
     canActivate: [authGuard]
   },
-  // --- Employee Portal Layout ---
   {
     path: "employee",
     loadComponent: () =>
@@ -43,7 +42,6 @@ export const routes: Routes = [
       }
     ]
   },
-  // --- HR Admin Portal Layout ---
   {
     path: "admin",
     loadComponent: () =>
