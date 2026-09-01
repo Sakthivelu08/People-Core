@@ -1,0 +1,15 @@
+# Python Bytecode & Doc Assets
+__pycache__/
+*.pyc
+doc_assets/
+*.docx
+
+# Environment Files
+.env
+.env.local
+
+# Node & Build Outputs
+node_modules/
+dist/
+tmp/
+.DS_Store
