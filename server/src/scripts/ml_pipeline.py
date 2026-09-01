@@ -45,16 +45,22 @@ def main():
     db_user = env.get("DB_USER", "root")
     db_password = env.get("DB_PASSWORD", "")
     db_name = env.get("DB_NAME", "peoplecore")
+    db_ssl = env.get("DB_SSL", "false").lower() == "true"
     
     # 2. Connect to MySQL
     print(f"[ML Pipeline] Connecting to database {db_name} at {db_host}:{db_port}...")
-    conn = mysql.connector.connect(
-        host=db_host,
-        port=db_port,
-        user=db_user,
-        password=db_password,
-        database=db_name
-    )
+    conn_kwargs = {
+        "host": db_host,
+        "port": db_port,
+        "user": db_user,
+        "password": db_password,
+        "database": db_name
+    }
+    if db_ssl:
+        conn_kwargs["ssl_disabled"] = False
+        conn_kwargs["ssl_verify_cert"] = False
+
+    conn = mysql.connector.connect(**conn_kwargs)
     cursor = conn.cursor(dictionary=True)
     
     # 3. Step A: Train the model on synthetic historical training data

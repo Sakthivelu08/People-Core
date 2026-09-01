@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:8080/api', // Point to load balancer port 8080
+  apiUrl: 'https://peoplecore-backend-api-cveweregfvcgbrax.canadacentral-01.azurewebsites.net/api',
   apiEndpoints: {
     employees: '/employees',
     employeeMe: '/employees/me',
@@ -14,6 +14,6 @@ export const environment = {
   azure: {
     clientId: "65a96e47-e4c1-410e-9944-a3022a01a447",
     tenantId: "7fa1af66-8e05-4be1-9935-d6eedbcb74f7",
-    redirectUri: "http://localhost:4200"
+    redirectUri: typeof window !== 'undefined' ? window.location.origin : "http://localhost:4200"
   },
 };

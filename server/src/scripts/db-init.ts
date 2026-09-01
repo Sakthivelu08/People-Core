@@ -15,12 +15,15 @@ const database = process.env.DB_NAME || 'peoplecore';
 export async function initDb() {
   console.log('[DB-Init] Connecting to MySQL server to check/initialize database...');
   
+  const sslConfig = process.env.DB_SSL === 'true' ? { minVersion: 'TLSv1.2', rejectUnauthorized: false } : undefined;
+
   // 1. Connect without database to create it if it doesn't exist
   const connection = await mysql.createConnection({
     host,
     port,
     user,
-    password
+    password,
+    ssl: sslConfig
   });
 
   console.log(`[DB-Init] Creating database "${database}" if it does not exist...`);
@@ -33,7 +36,8 @@ export async function initDb() {
     port,
     user,
     password,
-    database
+    database,
+    ssl: sslConfig
   });
 
   console.log('[DB-Init] Creating tables...');
@@ -67,7 +71,7 @@ export async function initDb() {
       days            INT             NOT NULL,
       reason          VARCHAR(500),
       status          ENUM('pending','approved','rejected') DEFAULT 'pending',
-      applied_on      DATE            DEFAULT (CURRENT_DATE),
+      applied_on      DATETIME        DEFAULT CURRENT_TIMESTAMP,
       reviewed_by     CHAR(36),
       reviewed_on     DATE,
       FOREIGN KEY (employee_id) REFERENCES employees(id),
@@ -83,7 +87,7 @@ export async function initDb() {
       annual_total    INT             DEFAULT 14,
       sick_total      INT             DEFAULT 12,
       casual_total    INT             DEFAULT 6,
-      year            YEAR            DEFAULT (YEAR(CURRENT_DATE)),
+      year            INT             DEFAULT 2026,
       FOREIGN KEY (employee_id) REFERENCES employees(id)
     );
   `);

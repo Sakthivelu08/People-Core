@@ -15,13 +15,16 @@ const database = process.env.DB_NAME || 'peoplecore';
 async function main() {
   console.log('[AI Narrative Worker] Starting background narrative generator...');
 
+  const sslConfig = process.env.DB_SSL === 'true' ? { minVersion: 'TLSv1.2', rejectUnauthorized: false } : undefined;
+
   // 1. Establish database connection
   const dbConnection = await mysql.createConnection({
     host,
     port,
     user,
     password,
-    database
+    database,
+    ssl: sslConfig
   });
 
   try {

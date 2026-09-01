@@ -5,7 +5,10 @@ import path from 'path';
 // Load environment variables from server/.env
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
-const dbConfig = {
+const isSslEnabled = process.env.DB_SSL === 'true' || 
+                     (process.env.DB_HOST && (process.env.DB_HOST.includes('tidbcloud.com') || process.env.DB_HOST.includes('azure.com')));
+
+const dbConfig: any = {
   host: process.env.DB_HOST || '127.0.0.1',
   port: parseInt(process.env.DB_PORT || '3306', 10),
   user: process.env.DB_USER || 'root',
@@ -15,7 +18,8 @@ const dbConfig = {
   connectionLimit: 10,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 0
+  keepAliveInitialDelay: 0,
+  ssl: isSslEnabled ? { minVersion: 'TLSv1.2', rejectUnauthorized: false } : undefined
 };
 
 console.log(`[Database] Initializing connection pool for ${dbConfig.user}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`);
