@@ -1,57 +1,53 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
 import { SidebarComponent } from './sidebar.component';
-import { RouterModule } from '@angular/router';
-import { RoleService } from '../../../core/services/role.service';
 import { provideMsalMocks, mockMsalService } from '../../../testing/msal.mock';
-
-const mockRoleService = {
-  isAdmin: jest.fn().mockReturnValue(true),
-};
+import { RoleService } from '../../../core/services/role.service';
 
 describe('SidebarComponent', () => {
   let fixture: ComponentFixture<SidebarComponent>;
   let component: SidebarComponent;
+  let mockRoleService: any;
+  let router: Router;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
+    mockRoleService = {
+      isAdmin: jasmine.createSpy('isAdmin').and.returnValue(true)
+    };
+
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent, RouterModule.forRoot([])],
+      imports: [SidebarComponent],
       providers: [
-        ...provideMsalMocks(),
+        provideRouter([]),
         { provide: RoleService, useValue: mockRoleService },
-      ],
+        ...provideMsalMocks()
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SidebarComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create and set isAdmin signal', () => {
     expect(component).toBeTruthy();
+    expect(component.isAdmin()).toBe(true);
   });
 
-  it('should set isAdmin true for admin user', () => {
-    expect(component.isAdmin).toBe(true);
+  it('should return employee nav items when not in admin path', () => {
+    expect(component.navItems.length).toBe(3);
+    expect(component.portalTitle).toBe('PeopleCore Portal');
   });
 
-  it('should show admin nav items when isAdmin', () => {
-    expect(component.adminNavItems.length).toBeGreaterThan(0);
-    expect(component.navItems).toEqual(component.allNavItems);
+  it('should return admin nav items when in admin path', () => {
+    spyOnProperty(router, 'url', 'get').and.returnValue('/admin/dashboard');
+    expect(component.isAdminMode).toBe(true);
+    expect(component.portalTitle).toBe('PeopleCore Admin');
+    expect(component.navItems.length).toBe(4);
   });
 
-  it('should show employee nav items', () => {
-    expect(component.employeeNavItems.length).toBeGreaterThan(0);
-  });
-
-  it('should hide admin items for non-admin', () => {
-    mockRoleService.isAdmin.mockReturnValue(false);
-    component.ngOnInit();
-    expect(component.isAdmin).toBe(false);
-    expect(component.navItems.every(item => !item.adminOnly)).toBe(true);
-  });
-
-  it('should call logoutRedirect on logout()', () => {
+  it('should trigger logout', () => {
     component.logout();
     expect(mockMsalService.logoutRedirect).toHaveBeenCalled();
   });

@@ -3,26 +3,28 @@ import { of, Subject } from 'rxjs';
 import { InteractionStatus } from '@azure/msal-browser';
 
 export const mockMsalInstance = {
-  getActiveAccount: jest.fn().mockReturnValue({
+  getActiveAccount: jasmine.createSpy('getActiveAccount').and.returnValue({
     idTokenClaims: { roles: ['Admin'] },
+    name: 'Test Admin',
+    username: 'admin@test.com'
   }),
-  getAllAccounts: jest.fn().mockReturnValue([{}]),
-  setActiveAccount: jest.fn(),
-  acquireTokenSilent: jest.fn().mockResolvedValue({ accessToken: 'mock-token' }),
-  initialize: jest.fn().mockResolvedValue(undefined),
+  getAllAccounts: jasmine.createSpy('getAllAccounts').and.returnValue([{}]),
+  setActiveAccount: jasmine.createSpy('setActiveAccount'),
+  acquireTokenSilent: jasmine.createSpy('acquireTokenSilent').and.resolveTo({ accessToken: 'mock-token' }),
+  initialize: jasmine.createSpy('initialize').and.resolveTo(undefined),
 };
 
 export const mockMsalService = {
   instance: mockMsalInstance,
-  getLogger: jest.fn().mockReturnValue({
-    verbose: jest.fn(),
-    info: jest.fn(),
-    warning: jest.fn(),
-    error: jest.fn(),
+  getLogger: jasmine.createSpy('getLogger').and.returnValue({
+    verbose: jasmine.createSpy('verbose'),
+    info: jasmine.createSpy('info'),
+    warning: jasmine.createSpy('warning'),
+    error: jasmine.createSpy('error'),
   }),
-  handleRedirectObservable: jest.fn().mockReturnValue(of(null)),
-  loginRedirect: jest.fn(),
-  logoutRedirect: jest.fn(),
+  handleRedirectObservable: jasmine.createSpy('handleRedirectObservable').and.returnValue(of(null)),
+  loginRedirect: jasmine.createSpy('loginRedirect'),
+  logoutRedirect: jasmine.createSpy('logoutRedirect'),
 };
 
 export const mockMsalBroadcastService = {

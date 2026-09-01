@@ -1,53 +1,58 @@
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { InsightsService } from './insights.service';
+import { ApiService } from '../../services/api.service';
 
 describe('InsightsService', () => {
   let service: InsightsService;
+  let mockApi: any;
 
   beforeEach(() => {
-    service = new InsightsService();
+    mockApi = {
+      getAttritionRisk: jasmine.createSpy('getAttritionRisk').and.returnValue(of([
+        { name: 'Test User', department: 'Sales', riskScore: 80, riskLevel: 'high', keyFactors: [] }
+      ])),
+      getEngagementScores: jasmine.createSpy('getEngagementScores').and.returnValue(of([
+        { department: 'Engineering', score: 85, trend: 'rising' }
+      ])),
+      getNarrativeSummary: jasmine.createSpy('getNarrativeSummary').and.returnValue(of({ narrative: 'Mock narrative' }))
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        InsightsService,
+        { provide: ApiService, useValue: mockApi }
+      ]
+    });
+
+    service = TestBed.inject(InsightsService);
   });
 
-  it('should return attrition insights array', () => {
-    const data = service.getAttritionInsights();
-    expect(data.length).toBeGreaterThan(0);
-  });
-
-  it('should have valid riskLevel values', () => {
-    const valid = ['low', 'medium', 'high'];
-    service.getAttritionInsights().forEach(i => {
-      expect(valid).toContain(i.riskLevel);
+  it('should return attrition insights', (done) => {
+    service.getAttritionInsights().subscribe(data => {
+      expect(data.length).toBe(1);
+      expect(data[0].riskLevel).toBe('high');
+      done();
     });
   });
 
-  it('should have riskScore between 0 and 100', () => {
-    service.getAttritionInsights().forEach(i => {
-      expect(i.riskScore).toBeGreaterThanOrEqual(0);
-      expect(i.riskScore).toBeLessThanOrEqual(100);
+  it('should return engagement insights', (done) => {
+    service.getEngagementInsights().subscribe(data => {
+      expect(data.length).toBe(1);
+      expect(data[0].score).toBe(85);
+      done();
     });
   });
 
-  it('should return engagement insights array', () => {
-    const data = service.getEngagementInsights();
-    expect(data.length).toBeGreaterThan(0);
-  });
-
-  it('should have valid trend values', () => {
-    const valid = ['rising', 'stable', 'declining'];
-    service.getEngagementInsights().forEach(e => {
-      expect(valid).toContain(e.trend);
+  it('should return AI narrative summary and handle empty fallback', (done) => {
+    service.getAiNarrative().subscribe(narrative => {
+      expect(narrative).toBe('Mock narrative');
+      
+      mockApi.getNarrativeSummary.and.returnValue(of({}));
+      service.getAiNarrative().subscribe(emptyNarrative => {
+        expect(emptyNarrative).toBe('');
+        done();
+      });
     });
-  });
-
-  it('should have engagement scores between 0 and 100', () => {
-    service.getEngagementInsights().forEach(e => {
-      expect(e.score).toBeGreaterThanOrEqual(0);
-      expect(e.score).toBeLessThanOrEqual(100);
-    });
-  });
-
-  it('should return a non-empty AI narrative string', () => {
-    const narrative = service.getAiNarrative();
-    expect(typeof narrative).toBe('string');
-    expect(narrative.length).toBeGreaterThan(0);
   });
 });

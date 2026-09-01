@@ -1,31 +1,40 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { of, throwError } from 'rxjs';
 import { LeaveComponent } from './leave.component';
 import { LeaveService } from '../../core/services/leave.service';
-import { LeaveRequest } from '../../core/models/leave.model';
-
-const mockRequests: LeaveRequest[] = [
-  { id: '1', type: 'annual', startDate: '2026-05-01', endDate: '2026-05-03', days: 3, reason: 'Vacation trip', status: 'approved', appliedOn: '2026-04-20' },
-  { id: '2', type: 'sick',   startDate: '2026-06-01', endDate: '2026-06-01', days: 1, reason: 'Fever and rest', status: 'pending',  appliedOn: '2026-06-01' },
-];
-
-const mockLeaveService = {
-  getAll:     jest.fn().mockReturnValue(mockRequests),
-  getBalance: jest.fn().mockReturnValue({ annual: 11, sick: 11, casual: 6 }),
-  add:        jest.fn(),
-};
+import { SnackbarService } from '../../core/services/snackbar.service';
 
 describe('LeaveComponent', () => {
   let fixture: ComponentFixture<LeaveComponent>;
   let component: LeaveComponent;
+  let mockLeaveService: any;
+  let mockSnackbar: any;
 
   beforeEach(async () => {
-    jest.clearAllMocks();
-    mockLeaveService.getAll.mockReturnValue(mockRequests);
-    mockLeaveService.getBalance.mockReturnValue({ annual: 11, sick: 11, casual: 6 });
+    mockLeaveService = {
+      getAll: jasmine.createSpy('getAll').and.returnValue(of([
+        { id: '1', type: 'annual', startDate: '2026-06-01', endDate: '2026-06-05', days: 5, reason: 'Vacation', appliedOn: '2026-05-20', status: 'approved' }
+      ])),
+      getBalance: jasmine.createSpy('getBalance').and.returnValue(of({
+        annual: 15,
+        sick: 10,
+        casual: 5
+      })),
+      add: jasmine.createSpy('add').and.returnValue(of({}))
+    };
+
+    mockSnackbar = {
+      success: jasmine.createSpy('success'),
+      error: jasmine.createSpy('error')
+    };
 
     await TestBed.configureTestingModule({
-      imports: [LeaveComponent],
-      providers: [{ provide: LeaveService, useValue: mockLeaveService }],
+      imports: [LeaveComponent, ReactiveFormsModule],
+      providers: [
+        { provide: LeaveService, useValue: mockLeaveService },
+        { provide: SnackbarService, useValue: mockSnackbar }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LeaveComponent);
@@ -33,76 +42,66 @@ describe('LeaveComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create and load leave data', () => {
     expect(component).toBeTruthy();
+    expect(component.requests().length).toBe(1);
+    expect(component.balance()?.annual).toBe(15);
   });
 
-  it('should load requests and balance on init', () => {
-    expect(component.requests.length).toBe(2);
-    expect(component.balance.annual).toBe(11);
+  it('should handle getAll and getBalance API errors', () => {
+    mockLeaveService.getAll.and.returnValue(throwError(() => new Error('Error getAll')));
+    mockLeaveService.getBalance.and.returnValue(throwError(() => new Error('Error getBalance')));
+
+    component.load();
+    expect(mockSnackbar.error).toHaveBeenCalledWith('Failed to load leave history.');
   });
 
   it('should calculate days correctly', () => {
-    component.leaveForm.patchValue({ startDate: '2026-07-01', endDate: '2026-07-03' });
-    expect(component.days).toBe(3);
-  });
-
-  it('should return 1 day when start equals end', () => {
-    component.leaveForm.patchValue({ startDate: '2026-07-01', endDate: '2026-07-01' });
-    expect(component.days).toBe(1);
-  });
-
-  it('should return 0 days when dates not set', () => {
-    component.leaveForm.patchValue({ startDate: '', endDate: '' });
     expect(component.days).toBe(0);
+
+    component.leaveForm.patchValue({
+      startDate: '2026-06-01',
+      endDate: '2026-06-05'
+    });
+    expect(component.days).toBe(5);
   });
 
-  it('should not submit when form is invalid', () => {
-    component.leaveForm.patchValue({ reason: '' });
+  it('should return early on submit if form is invalid', () => {
     component.submit();
     expect(mockLeaveService.add).not.toHaveBeenCalled();
   });
 
-  it('should submit valid form and show success banner', () => {
-    jest.useFakeTimers();
-    component.leaveForm.patchValue({
-      type: 'sick',
-      startDate: '2026-07-10',
-      endDate: '2026-07-10',
-      reason: 'Feeling unwell with fever',
-    });
-    component.submit();
-    expect(mockLeaveService.add).toHaveBeenCalledTimes(1);
-    expect(component.submitSuccess).toBe(true);
-    jest.advanceTimersByTime(3000);
-    expect(component.submitSuccess).toBe(false);
-    jest.useRealTimers();
-  });
-
-  it('should validate reason minimum length', () => {
-    component.leaveForm.patchValue({ reason: 'short' });
-    expect(component.leaveForm.get('reason')?.valid).toBe(false);
-  });
-
-  it('should pass validation with reason >= 10 chars', () => {
+  it('should submit valid leave request successfully', () => {
     component.leaveForm.patchValue({
       type: 'annual',
-      startDate: '2026-07-01',
-      endDate: '2026-07-01',
-      reason: 'Valid reason for leave',
+      startDate: '2026-06-01',
+      endDate: '2026-06-05',
+      reason: 'Long vacation trip'
     });
-    expect(component.leaveForm.valid).toBe(true);
+
+    component.submit();
+    expect(mockLeaveService.add).toHaveBeenCalledWith({
+      type: 'annual',
+      startDate: '2026-06-01',
+      endDate: '2026-06-05',
+      days: 5,
+      reason: 'Long vacation trip'
+    });
+    expect(mockSnackbar.success).toHaveBeenCalledWith('Leave request submitted successfully!');
+    expect(component.showForm()).toBe(false);
   });
 
-  it('should reset form and hide form panel after submit', () => {
-    component.showForm = true;
+  it('should handle leave submit error', () => {
+    mockLeaveService.add.and.returnValue(throwError(() => new Error('Submit error')));
+
     component.leaveForm.patchValue({
-      type: 'casual',
-      startDate: '2026-07-05',
-      endDate: '2026-07-05',
-      reason: 'Personal errand work',
+      type: 'annual',
+      startDate: '2026-06-01',
+      endDate: '2026-06-05',
+      reason: 'Long vacation trip'
     });
+
     component.submit();
-    expect(component.showForm).toBe(false);
+    expect(mockSnackbar.error).toHaveBeenCalledWith('Failed to submit leave request.');
   });
 });

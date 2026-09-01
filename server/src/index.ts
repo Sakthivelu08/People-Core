@@ -39,6 +39,32 @@ app.use('/api/insights', insightRouter);
 // Global Error Handler (must be registered last)
 app.use(errorHandler);
 
+// Daily Background Job Scheduler for ML Pipeline & AI Narratives
+function scheduleDailyJobs() {
+  const runJobs = async () => {
+    console.log('[Scheduler] Running daily ML prediction and AI narrative background jobs...');
+    try {
+      const { exec } = require('child_process');
+      const serverDir = path.join(__dirname, '..');
+      
+      exec(`python "${path.join(serverDir, 'src/scripts/ml_pipeline.py')}"`, (err: any, stdout: string) => {
+        if (err) console.error('[Scheduler] ML pipeline error:', err.message);
+        else console.log('[Scheduler] ML pipeline completed successfully.');
+      });
+
+      exec(`npx ts-node "${path.join(serverDir, 'src/scripts/ai_narrative_worker.ts')}"`, (err: any, stdout: string) => {
+        if (err) console.error('[Scheduler] AI Narrative worker error:', err.message);
+        else console.log('[Scheduler] AI Narrative worker completed successfully.');
+      });
+    } catch (e: any) {
+      console.error('[Scheduler] Failed to execute background jobs:', e.message);
+    }
+  };
+
+  setTimeout(runJobs, 30000);
+  setInterval(runJobs, 24 * 60 * 60 * 1000);
+}
+
 // Start the server
 async function startServer() {
   console.log('[Server] Connecting to database...');
@@ -48,6 +74,7 @@ async function startServer() {
     console.log('[Server] Database connected successfully.');
     console.log('[Server] Connecting to Redis...');
     await connectRedis();
+    scheduleDailyJobs();
   } else {
     console.error('[Server] CRITICAL: Database connection failed. Booting down...');
     process.exit(1);

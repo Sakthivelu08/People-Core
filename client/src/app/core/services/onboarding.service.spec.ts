@@ -1,96 +1,85 @@
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { OnboardingService } from './onboarding.service';
-import { OnboardingTask } from '../models/onboarding.model';
+import { ApiService } from '../../services/api.service';
 
 describe('OnboardingService', () => {
   let service: OnboardingService;
+  let mockApi: any;
 
   beforeEach(() => {
-    localStorage.clear();
-    service = new OnboardingService();
+    mockApi = {
+      registerEmployee: jasmine.createSpy('registerEmployee').and.returnValue(of({ id: 'new-emp' })),
+      getEmployees: jasmine.createSpy('getEmployees').and.returnValue(of([{ id: '1', name: 'John Doe' }])),
+      getOnboardingTasks: jasmine.createSpy('getOnboardingTasks').and.returnValue(of([
+        { id: 't1', title: 'Task 1', description: 'Desc 1', category: 'documents', completed: 1, due_date: '2026-06-01' }
+      ])),
+      toggleOnboardingTask: jasmine.createSpy('toggleOnboardingTask').and.returnValue(of({}))
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        OnboardingService,
+        { provide: ApiService, useValue: mockApi }
+      ]
+    });
+
+    service = TestBed.inject(OnboardingService);
   });
 
-  it('should seed tasks on first load', () => {
-    expect(service.getTasks().length).toBeGreaterThan(0);
+  it('should register employee with all optional parameters', (done) => {
+    service.addEmployee({
+      name: 'John',
+      email: 'john@ex.com',
+      join_date: '2026-06-01',
+      job_title: 'Senior Dev',
+      department: 'Engineering',
+      role: 'Admin'
+    }).subscribe(res => {
+      expect(mockApi.registerEmployee).toHaveBeenCalledWith(jasmine.objectContaining({
+        job_title: 'Senior Dev',
+        department: 'Engineering',
+        role: 'Admin'
+      }));
+      done();
+    });
   });
 
-  it('should toggle task completed state', () => {
-    const tasks = service.getTasks();
-    const task = tasks[0];
-    const initial = task.completed;
-    service.toggle(task.id);
-    expect(service.getTasks()[0].completed).toBe(!initial);
+  it('should return employee list', (done) => {
+    service.getEmployeeList().subscribe(list => {
+      expect(list.length).toBe(1);
+      done();
+    });
   });
 
-  it('should toggle back to original on second toggle', () => {
-    const tasks = service.getTasks();
-    const task = tasks[0];
-    const initial = task.completed;
-    service.toggle(task.id);
-    service.toggle(task.id);
-    expect(service.getTasks()[0].completed).toBe(initial);
+  it('should fetch tasks for employee and calculate progress', (done) => {
+    service.getTasksForEmployee('1').subscribe(tasks => {
+      expect(tasks.length).toBe(1);
+      expect(tasks[0].completed).toBe(true);
+      expect(service.getProgress(tasks)).toBe(100);
+      done();
+    });
   });
 
-  it('should leave tasks unchanged when toggling an unknown task', () => {
-    const before = service.getTasks();
-    service.toggle('missing-task');
-    expect(service.getTasks()).toEqual(before);
+  it('should fetch tasks with getTasks() wrapper', (done) => {
+    service.getTasks().subscribe(tasks => {
+      expect(tasks.length).toBe(1);
+      done();
+    });
   });
 
-  it('should calculate 0% progress when no tasks completed', () => {
-    const tasks: OnboardingTask[] = [
-      { id: '1', title: '', description: '', category: 'documents', completed: false, dueDate: '' },
-      { id: '2', title: '', description: '', category: 'training',  completed: false, dueDate: '' },
-    ];
-    expect(service.getProgress(tasks)).toBe(0);
-  });
-
-  it('should calculate 50% progress when half completed', () => {
-    const tasks: OnboardingTask[] = [
-      { id: '1', title: '', description: '', category: 'documents', completed: true,  dueDate: '' },
-      { id: '2', title: '', description: '', category: 'training',  completed: false, dueDate: '' },
-    ];
-    expect(service.getProgress(tasks)).toBe(50);
-  });
-
-  it('should calculate 100% when all completed', () => {
-    const tasks: OnboardingTask[] = [
-      { id: '1', title: '', description: '', category: 'setup', completed: true, dueDate: '' },
-    ];
-    expect(service.getProgress(tasks)).toBe(100);
-  });
-
-  it('should return 0 for empty task list', () => {
+  it('should return 0 progress for empty task list or null tasks', () => {
     expect(service.getProgress([])).toBe(0);
+    expect(service.getProgress(null as any)).toBe(0);
   });
 
-  it('should add employee and store in localStorage', () => {
-    service.addEmployee('Arjun Mehta', '2026-06-01');
-    const list = service.getEmployeeList();
-    expect(list.length).toBe(1);
-    expect(list[0].name).toBe('Arjun Mehta');
-  });
-
-  it('should seed tasks for newly added employee', () => {
-    service.addEmployee('Priya Rajan', '2026-06-01');
-    const emp = service.getEmployeeList()[0];
-    const tasks = service.getTasksForEmployee(emp.storageKey);
-    expect(tasks.length).toBeGreaterThan(0);
-  });
-
-  it('should toggle task for specific employee', () => {
-    service.addEmployee('Test User', '2026-06-01');
-    const emp = service.getEmployeeList()[0];
-    const tasks = service.getTasksForEmployee(emp.storageKey);
-    const initial = tasks[0].completed;
-    service.toggleForEmployee(emp.storageKey, tasks[0].id);
-    expect(service.getTasksForEmployee(emp.storageKey)[0].completed).toBe(!initial);
-  });
-
-  it('should leave employee tasks unchanged when toggling an unknown task', () => {
-    service.addEmployee('Unknown Toggle', '2026-06-01');
-    const emp = service.getEmployeeList()[0];
-    const before = service.getTasksForEmployee(emp.storageKey);
-    service.toggleForEmployee(emp.storageKey, 'missing-task');
-    expect(service.getTasksForEmployee(emp.storageKey)).toEqual(before);
+  it('should toggle onboarding task via toggle and toggleForEmployee', (done) => {
+    service.toggle('t1').subscribe(() => {
+      expect(mockApi.toggleOnboardingTask).toHaveBeenCalledWith('t1');
+      service.toggleForEmployee('t2').subscribe(() => {
+        expect(mockApi.toggleOnboardingTask).toHaveBeenCalledWith('t2');
+        done();
+      });
+    });
   });
 });

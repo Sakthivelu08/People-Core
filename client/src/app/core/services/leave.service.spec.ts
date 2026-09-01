@@ -1,57 +1,61 @@
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { LeaveService } from './leave.service';
-import { LeaveRequest } from '../models/leave.model';
+import { ApiService } from '../../services/api.service';
 
 describe('LeaveService', () => {
   let service: LeaveService;
+  let mockApi: any;
 
   beforeEach(() => {
-    localStorage.clear();
-    service = new LeaveService();
+    mockApi = {
+      getLeaveRequests: jasmine.createSpy('getLeaveRequests').and.returnValue(of([
+        { id: '1', type: 'annual', start_date: '2026-06-01', end_date: '2026-06-03', days: 3, reason: 'Vacation', applied_on: '2026-05-20', status: 'Approved' }
+      ])),
+      getLeaveBalances: jasmine.createSpy('getLeaveBalances').and.returnValue(of({
+        annual_total: 14, annual_used: 3, sick_total: 12, sick_used: 1, casual_total: 6, casual_used: 0
+      })),
+      submitLeaveRequest: jasmine.createSpy('submitLeaveRequest').and.returnValue(of({ id: '2' }))
+    };
+
+    TestBed.configureTestingModule({
+      providers: [
+        LeaveService,
+        { provide: ApiService, useValue: mockApi }
+      ]
+    });
+
+    service = TestBed.inject(LeaveService);
   });
 
-  it('should seed data on first load', () => {
-    const all = service.getAll();
-    expect(all.length).toBeGreaterThan(0);
+  it('should return all mapped leave requests', (done) => {
+    service.getAll().subscribe(reqs => {
+      expect(reqs.length).toBe(1);
+      expect(reqs[0].days).toBe(3);
+      done();
+    });
   });
 
-  it('should return same data from localStorage on second call', () => {
-    const first = service.getAll();
-    const second = service.getAll();
-    expect(first.length).toBe(second.length);
+  it('should submit a leave request', (done) => {
+    service.add({ type: 'annual', startDate: '2026-06-01', endDate: '2026-06-03', days: 3, reason: 'Trip' }).subscribe(res => {
+      expect(mockApi.submitLeaveRequest).toHaveBeenCalled();
+      done();
+    });
   });
 
-  it('should add a new leave request with status pending', () => {
-    const before = service.getAll().length;
-    service.add({ type: 'sick', startDate: '2026-07-01', endDate: '2026-07-01', days: 1, reason: 'Feeling unwell today' });
-    expect(service.getAll().length).toBe(before + 1);
-    expect(service.getAll()[0].status).toBe('pending');
-  });
+  it('should calculate mapped leave balance and handle defaults', (done) => {
+    service.getBalance().subscribe(bal => {
+      expect(bal.annual).toBe(11);
+      expect(bal.sick).toBe(11);
+      expect(bal.casual).toBe(6);
 
-  it('should prepend new request to top of list', () => {
-    service.add({ type: 'casual', startDate: '2026-07-10', endDate: '2026-07-10', days: 1, reason: 'Personal errand work' });
-    expect(service.getAll()[0].type).toBe('casual');
-  });
-
-  it('should calculate balance by subtracting approved leaves', () => {
-    localStorage.clear();
-    const requests: LeaveRequest[] = [
-      { id: '1', type: 'annual', startDate: '', endDate: '', days: 3, reason: '', status: 'approved', appliedOn: '' },
-      { id: '2', type: 'sick',   startDate: '', endDate: '', days: 2, reason: '', status: 'approved', appliedOn: '' },
-      { id: '3', type: 'annual', startDate: '', endDate: '', days: 5, reason: '', status: 'pending',  appliedOn: '' },
-    ];
-    localStorage.setItem('pc_leave_requests', JSON.stringify(requests));
-    const balance = service.getBalance();
-    expect(balance.annual).toBe(11); // 14 - 3
-    expect(balance.sick).toBe(10);   // 12 - 2
-    expect(balance.casual).toBe(6);  // unchanged
-  });
-
-  it('should not deduct rejected leaves from balance', () => {
-    localStorage.clear();
-    const requests: LeaveRequest[] = [
-      { id: '1', type: 'annual', startDate: '', endDate: '', days: 5, reason: '', status: 'rejected', appliedOn: '' },
-    ];
-    localStorage.setItem('pc_leave_requests', JSON.stringify(requests));
-    expect(service.getBalance().annual).toBe(14);
+      mockApi.getLeaveBalances.and.returnValue(of({}));
+      service.getBalance().subscribe(defaultBal => {
+        expect(defaultBal.annual).toBe(14);
+        expect(defaultBal.sick).toBe(12);
+        expect(defaultBal.casual).toBe(6);
+        done();
+      });
+    });
   });
 });
