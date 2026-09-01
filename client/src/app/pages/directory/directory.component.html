@@ -1,51 +1,51 @@
 <div class="page">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <div>
-            <h1 class="page-title">Corporate Directory & Org Hierarchy</h1>
-            <p class="page-sub">Explore team members, departments, and organizational structures</p>
+            <h1 class="page-title" style="color: #0f172a; font-size: 22px; font-weight: 700; margin: 0 0 4px 0;">Corporate Directory & Org Hierarchy</h1>
+            <p class="page-sub" style="color: #64748b; font-size: 13px; margin: 0;">Explore team members, departments, and organizational structures</p>
         </div>
 
         <div style="display: flex; align-items: center; gap: 12px;">
-            <input type="text" placeholder="Search by name, email, title..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; padding: 8px 14px; border-radius: 8px; font-size: 13px; outline: none; width: 240px;">
+            <input type="text" placeholder="Search by name, email, title..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" style="background: #ffffff; border: 1px solid #cbd5e1; color: #1e293b; padding: 8px 14px; border-radius: 8px; font-size: 13px; outline: none; width: 240px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
         </div>
     </div>
 
     <!-- Department Filter Tabs -->
-    <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+    <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
         @for (dept of departments; track dept) {
-        <button (click)="setDepartment(dept)" [style.background]="selectedDept() === dept ? '#6366f1' : 'transparent'" [style.color]="selectedDept() === dept ? '#fff' : '#a1a1aa'" style="border: 1px solid rgba(255,255,255,0.1); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+        <button (click)="setDepartment(dept)" [style.background]="selectedDept() === dept ? '#6366f1' : '#f1f5f9'" [style.color]="selectedDept() === dept ? '#ffffff' : '#475569'" style="border: 1px solid #cbd5e1; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
             {{ dept }}
         </button>
         }
     </div>
 
     @if (loading()) {
-    <div style="color: #a1a1aa; padding: 40px; text-align: center;">Loading corporate directory...</div>
+    <div style="color: #64748b; padding: 40px; text-align: center;">Loading corporate directory...</div>
     } @else {
     <!-- Directory Grid Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px;">
         @for (emp of filteredEmployees(); track emp.id) {
-        <div style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; position: relative;">
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
-                <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 18px;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 18px; box-shadow: 0 2px 4px rgba(99,102,241,0.2);">
                     {{ emp.name?.charAt(0) || 'U' }}
                 </div>
                 <div>
-                    <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #f4f4f5;">{{ emp.name }}</h3>
-                    <span style="font-size: 12px; color: #94a3b8;">{{ emp.job_title || 'Software Engineer' }}</span>
+                    <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: #0f172a;">{{ emp.name }}</h3>
+                    <span style="font-size: 12px; color: #64748b; font-weight: 500;">{{ emp.job_title || 'Software Engineer' }}</span>
                 </div>
             </div>
 
-            <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; font-size: 12px; color: #cbd5e1; display: flex; flex-direction: column; gap: 6px;">
-                <div><strong style="color: #94a3b8;">Department:</strong> {{ emp.department || 'Engineering' }}</div>
-                <div><strong style="color: #94a3b8;">Email:</strong> {{ emp.email }}</div>
-                <div><strong style="color: #94a3b8;">Role:</strong> {{ emp.role || 'Employee' }}</div>
+            <div style="border-top: 1px solid #f1f5f9; padding-top: 12px; font-size: 12px; color: #334155; display: flex; flex-direction: column; gap: 6px;">
+                <div><strong style="color: #64748b;">Department:</strong> {{ emp.department || 'Engineering' }}</div>
+                <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><strong style="color: #64748b;">Email:</strong> {{ emp.email }}</div>
+                <div><strong style="color: #64748b;">Role:</strong> {{ emp.role || 'Employee' }}</div>
             </div>
 
             <div style="display: flex; gap: 6px; margin-top: 14px;">
-                <span style="background: rgba(99, 102, 241, 0.15); color: #818cf8; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Angular</span>
-                <span style="background: rgba(168, 85, 247, 0.15); color: #c084fc; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Node.js</span>
-                <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Azure AD</span>
+                <span style="background: #e0e7ff; color: #4338ca; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Angular</span>
+                <span style="background: #f3e8ff; color: #7e22ce; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Node.js</span>
+                <span style="background: #dcfce7; color: #15803d; font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600;">Azure AD</span>
             </div>
         </div>
         }

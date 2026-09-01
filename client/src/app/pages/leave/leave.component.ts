@@ -32,6 +32,8 @@ export class LeaveComponent implements OnInit {
   balance = signal<LeaveBalance | null>(null);
   showForm = signal<boolean>(false);
 
+  currentDate = signal<Date>(new Date());
+
   historyHeaders = ['Type', 'From', 'To', 'Days', 'Reason', 'Applied', 'Status'];
 
   leaveTypeOptions = [
@@ -40,15 +42,53 @@ export class LeaveComponent implements OnInit {
     { value: 'casual', label: 'Casual' }
   ];
 
-  calendarDays = computed(() => {
-    const daysArr = [];
-    const today = new Date();
-    for (let i = 1; i <= 31; i++) {
-      const isToday = i === today.getDate();
-      const hasLeave = i === 12 || i === 18 || i === 25;
-      daysArr.push({ dayNumber: i, isToday, hasLeave, leaveType: i === 12 ? 'annual' : (i === 18 ? 'sick' : 'casual') });
+  monthYearLabel = computed(() => {
+    const d = this.currentDate();
+    return d.toLocaleString('default', { month: 'long', year: 'numeric' });
+  });
+
+  calendarGrid = computed(() => {
+    const curr = this.currentDate();
+    const year = curr.getFullYear();
+    const month = curr.getMonth();
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const reqs = this.requests();
+
+    const grid = [];
+
+    // Empty padding slots before first day
+    for (let i = 0; i < firstDayIndex; i++) {
+      grid.push({ dayNumber: null, isToday: false, leave: null });
     }
-    return daysArr;
+
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayDate = new Date(year, month, day);
+      const isToday = 
+        dayDate.getDate() === today.getDate() &&
+        dayDate.getMonth() === today.getMonth() &&
+        dayDate.getFullYear() === today.getFullYear();
+
+      // Check if any leave request overlaps with this date
+      const activeLeave = reqs.find(r => {
+        if (!r.startDate || !r.endDate) return false;
+        const start = new Date(r.startDate);
+        const end = new Date(r.endDate);
+        start.setHours(0,0,0,0);
+        end.setHours(23,59,59,999);
+        return dayDate >= start && dayDate <= end;
+      });
+
+      grid.push({
+        dayNumber: day,
+        isToday,
+        leave: activeLeave || null
+      });
+    }
+
+    return grid;
   });
 
   private leaveService = inject(LeaveService);
@@ -79,6 +119,16 @@ export class LeaveComponent implements OnInit {
       next: (bal) => this.balance.set(bal),
       error: (err) => console.error('Failed to get balance:', err)
     });
+  }
+
+  prevMonth() {
+    const d = this.currentDate();
+    this.currentDate.set(new Date(d.getFullYear(), d.getMonth() - 1, 1));
+  }
+
+  nextMonth() {
+    const d = this.currentDate();
+    this.currentDate.set(new Date(d.getFullYear(), d.getMonth() + 1, 1));
   }
 
   get days(): number {
