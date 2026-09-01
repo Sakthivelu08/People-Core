@@ -3,23 +3,32 @@ import { createClient } from 'redis';
 const redisHost = process.env.REDIS_HOST || '127.0.0.1';
 const redisPort = process.env.REDIS_PORT || '6379';
 
-console.log(`[Redis] Initializing client pointing to redis://${redisHost}:${redisPort}`);
+const isRedisEnabled = process.env.ENABLE_REDIS === 'true';
 
-export const redisClient = createClient({
+let isConnected = false;
+
+export const redisClient = isRedisEnabled ? createClient({
   url: `redis://${redisHost}:${redisPort}`
-});
+}) : null as any;
 
-redisClient.on('error', (err) => {
-  console.error('[Redis] Client Connection Error:', err.message);
-});
+if (isRedisEnabled && redisClient) {
+  console.log(`[Redis] Initializing client pointing to redis://${redisHost}:${redisPort}`);
 
-redisClient.on('connect', () => {
-  console.log('[Redis] Client successfully connected to server.');
-});
+  redisClient.on('error', (err: any) => {
+    console.error('[Redis] Client Connection Error:', err.message);
+  });
+
+  redisClient.on('connect', () => {
+    console.log('[Redis] Client successfully connected to server.');
+  });
+}
 
 // Auto-connect to Redis
-let isConnected = false;
 export async function connectRedis() {
+  if (!isRedisEnabled) {
+    console.log('[Redis] Redis caching is currently disabled.');
+    return;
+  }
   if (isConnected) return;
   try {
     await redisClient.connect();
@@ -31,7 +40,7 @@ export async function connectRedis() {
 
 // Caching helper functions
 export async function getCache(key: string): Promise<any | null> {
-  if (!isConnected) return null;
+  if (!isRedisEnabled || !isConnected || !redisClient) return null;
   try {
     const value = await redisClient.get(key);
     if (value) {
@@ -44,7 +53,7 @@ export async function getCache(key: string): Promise<any | null> {
 }
 
 export async function setCache(key: string, value: any, ttlSeconds: number = 3600): Promise<void> {
-  if (!isConnected) return;
+  if (!isRedisEnabled || !isConnected || !redisClient) return;
   try {
     await redisClient.setEx(key, ttlSeconds, JSON.stringify(value));
   } catch (err: any) {
@@ -53,7 +62,7 @@ export async function setCache(key: string, value: any, ttlSeconds: number = 360
 }
 
 export async function invalidateCache(key: string): Promise<void> {
-  if (!isConnected) return;
+  if (!isRedisEnabled || !isConnected || !redisClient) return;
   try {
     await redisClient.del(key);
   } catch (err: any) {
@@ -62,7 +71,7 @@ export async function invalidateCache(key: string): Promise<void> {
 }
 
 export async function invalidatePattern(pattern: string): Promise<void> {
-  if (!isConnected) return;
+  if (!isRedisEnabled || !isConnected || !redisClient) return;
   try {
     const keys = await redisClient.keys(pattern);
     if (keys.length > 0) {
