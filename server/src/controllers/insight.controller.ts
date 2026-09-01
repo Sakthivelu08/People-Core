@@ -23,15 +23,15 @@ export class InsightController {
 
   static async getNarrative(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const provider = (req.query.provider as 'gemini' | 'ollama' | 'heuristic') || 'gemini';
+      const provider = (req.query?.provider as 'gemini' | 'ollama' | 'heuristic') || 'gemini';
       const baseInsight = await InsightService.getNarrativeInsights();
-      const risks = await InsightService.getAttritionRisks();
-      const highRiskCount = risks.filter((r: any) => r.riskLevel === 'high').length;
+      const risks = (await InsightService.getAttritionRisks()) || [];
+      const highRiskCount = Array.isArray(risks) ? risks.filter((r: any) => r.riskLevel === 'high').length : 0;
 
       const dynamicSummary = await aiProviderService.generateExecutiveSummary(provider, {
         highRiskCount,
-        totalEmployees: risks.length,
-        topRisks: risks.slice(0, 3).map((r: any) => ({ name: r.name, dept: r.department, score: r.riskScore }))
+        totalEmployees: Array.isArray(risks) ? risks.length : 0,
+        topRisks: Array.isArray(risks) ? risks.slice(0, 3).map((r: any) => ({ name: r.name, dept: r.department, score: r.riskScore })) : []
       });
 
       res.json({

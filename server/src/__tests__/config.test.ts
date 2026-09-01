@@ -1,9 +1,15 @@
 describe('Config DB & Connection Pool Unit Tests (Full Branch Coverage)', () => {
   const originalEnv = process.env;
+  let consoleSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...originalEnv };
+    consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleSpy.mockRestore();
   });
 
   afterAll(() => {

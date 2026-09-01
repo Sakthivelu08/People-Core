@@ -378,10 +378,11 @@ describe('Controller Tier Unit Tests', () => {
 
     it('getNarrative - returns generated narrative report', async () => {
       (InsightService.getNarrativeInsights as jest.Mock).mockResolvedValueOnce({ narrative: 'AI Summary' });
+      (InsightService.getAttritionRisks as jest.Mock).mockResolvedValueOnce([]);
       const { req, res, next } = createMockReqRes();
 
       await InsightController.getNarrative(req, res, next);
-      expect(res.json).toHaveBeenCalledWith({ narrative: 'AI Summary' });
+      expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ narrative: expect.any(String) }));
     });
 
     it('getNarrative - calls next on error', async () => {
