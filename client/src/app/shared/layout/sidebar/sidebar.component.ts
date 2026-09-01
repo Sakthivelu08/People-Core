@@ -40,6 +40,7 @@ export class SidebarComponent implements OnInit {
     if (this.isAdminMode) {
       return [
         { path: '/admin/dashboard',  label: 'HR Dashboard',      icon: 'dashboard'               },
+        { path: '/admin/directory',  label: 'Directory',          icon: 'groups'                  },
         { path: '/admin/onboarding', label: 'Onboarding Mgmt',   icon: 'admin_panel_settings'    },
         { path: '/admin/insights',   label: 'AI Insights',       icon: 'auto_awesome'            },
         { path: '/admin/employees/add', label: 'Add Employee',    icon: 'person_add'              },
@@ -47,6 +48,7 @@ export class SidebarComponent implements OnInit {
     } else {
       return [
         { path: '/employee/profile', label: 'My Profile',        icon: 'account_circle'          },
+        { path: '/employee/directory', label: 'Directory',       icon: 'groups'                  },
         { path: '/employee/leave',   label: 'Leave Tracker',     icon: 'date_range'              },
         { path: '/employee/onboarding', label: 'My Onboarding',  icon: 'assignment'              },
       ];

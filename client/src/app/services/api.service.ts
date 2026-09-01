@@ -72,7 +72,11 @@ export class ApiService {
     return this.http.get<any[]>(`${this.baseUrl}${this.endpoints.engagement}`);
   }
 
-  getNarrativeSummary(): Observable<any> {
-    return this.http.get(`${this.baseUrl}${this.endpoints.narrative}`);
+  getNarrativeSummary(provider?: string): Observable<any> {
+    let params = new HttpParams();
+    if (provider) {
+      params = params.set('provider', provider);
+    }
+    return this.http.get(`${this.baseUrl}${this.endpoints.narrative}`, { params });
   }
 }

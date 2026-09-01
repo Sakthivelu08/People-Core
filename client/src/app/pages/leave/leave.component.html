@@ -1,6 +1,6 @@
 <div class="page">
     <div class="page-header">
-        <h1 class="page-title">Leave Management</h1>
+        <h1 class="page-title">Leave Management & Team Calendar</h1>
         <button class="btn-primary" (click)="showForm.set(!showForm())" style="font-size: 13px; padding: 8px 14px;">
             {{ showForm() ? 'Cancel' : 'Apply for Leave' }}
         </button>
@@ -15,6 +15,32 @@
     </div>
     }
 
+    <!-- Team Monthly Leave Calendar Grid Widget -->
+    <div class="table-card" style="margin-bottom: 30px;">
+        <h2 style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+            <span class="material-icons-outlined" style="color: #6366f1;">calendar_month</span>
+            Team Monthly Availability Calendar
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 16px;">
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Sun</div>
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Mon</div>
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Tue</div>
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Wed</div>
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Thu</div>
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Fri</div>
+            <div style="font-size: 11px; font-weight: 700; color: #a1a1aa; text-align: center; text-transform: uppercase;">Sat</div>
+
+            @for (d of calendarDays(); track d.dayNumber) {
+            <div [style.background]="d.isToday ? 'rgba(99, 102, 241, 0.25)' : 'rgba(255, 255, 255, 0.03)'" [style.border]="d.isToday ? '1px solid #6366f1' : '1px solid rgba(255,255,255,0.06)'" style="padding: 10px; border-radius: 8px; min-height: 52px; display: flex; flex-direction: column; justify-content: space-between;">
+                <span style="font-size: 12px; font-weight: 600; color: #cbd5e1;">{{ d.dayNumber }}</span>
+                @if (d.hasLeave) {
+                <span style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 10px; padding: 2px 4px; border-radius: 4px; font-weight: 600; text-align: center;">On Leave</span>
+                }
+            </div>
+            }
+        </div>
+    </div>
 
     <!-- Apply Form -->
     <app-modal [isOpen]="showForm()" title="New Leave Request" (close)="showForm.set(false)">

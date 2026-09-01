@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { LeaveService } from '../../core/services/leave.service';
@@ -39,6 +39,17 @@ export class LeaveComponent implements OnInit {
     { value: 'sick', label: 'Sick' },
     { value: 'casual', label: 'Casual' }
   ];
+
+  calendarDays = computed(() => {
+    const daysArr = [];
+    const today = new Date();
+    for (let i = 1; i <= 31; i++) {
+      const isToday = i === today.getDate();
+      const hasLeave = i === 12 || i === 18 || i === 25;
+      daysArr.push({ dayNumber: i, isToday, hasLeave, leaveType: i === 12 ? 'annual' : (i === 18 ? 'sick' : 'casual') });
+    }
+    return daysArr;
+  });
 
   private leaveService = inject(LeaveService);
   private fb = inject(FormBuilder);

@@ -31,6 +31,11 @@ export const routes: Routes = [
           import("./pages/home/home.component").then(m => m.HomeComponent),
       },
       {
+        path: "directory",
+        loadComponent: () =>
+          import("./pages/directory/directory.component").then(m => m.DirectoryComponent),
+      },
+      {
         path: "leave",
         loadComponent: () =>
           import("./pages/leave/leave.component").then(m => m.LeaveComponent),
@@ -57,6 +62,11 @@ export const routes: Routes = [
         path: "dashboard",
         loadComponent: () =>
           import("./pages/admin/admin-dashboard/admin-dashboard.component").then(m => m.AdminDashboardComponent),
+      },
+      {
+        path: "directory",
+        loadComponent: () =>
+          import("./pages/directory/directory.component").then(m => m.DirectoryComponent),
       },
       {
         path: "onboarding",

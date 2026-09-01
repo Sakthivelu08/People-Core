@@ -1,13 +1,26 @@
 <div class="page">
-    <h1 class="page-title">AI People Insights</h1>
-    <p class="page-sub">Powered by PeopleCore ML Engine · Data as of today</p>
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h1 class="page-title">AI People Insights & Simulator</h1>
+            <p class="page-sub">Powered by PeopleCore ML Engine · Data as of today</p>
+        </div>
+        
+        <!-- Multi-AI Provider Selector using Reusable Dropdown Component -->
+        <div class="provider-selector" style="display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined" style="font-size: 16px; color: #a855f7;">psychology</span>
+            <span style="font-size: 12px; color: #a1a1aa; font-weight: 500;">AI Engine:</span>
+            <div style="min-width: 220px;">
+                <app-dropdown [options]="providerOptions" [ngModel]="selectedProvider()" (ngModelChange)="changeProvider($event)"></app-dropdown>
+            </div>
+        </div>
+    </div>
 
     <!-- AI Narrative -->
     <div class="narrative-card">
         <div class="narrative-header">
             <div class="ai-badge">
                 <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">auto_awesome</span>
-                AI Generated
+                {{ selectedProvider() === 'gemini' ? 'Google Gemini 2.5' : (selectedProvider() === 'ollama' ? 'Ollama Llama 3' : 'Rule Engine') }} Insight
             </div>
             <button class="regenerate-btn" (click)="regenerate()" [disabled]="isGenerating()">
                 <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">refresh</span>
@@ -23,10 +36,59 @@
         }
     </div>
 
+    <!-- Interactive Attrition Simulator Card -->
+    <div class="insight-card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.4), rgba(15, 23, 42, 0.6)); border: 1px solid rgba(168, 85, 247, 0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                <span class="material-icons-outlined" style="color: #a855f7;">tune</span>
+                Interactive Attrition Risk Simulator
+            </h2>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 12px; color: #a1a1aa;">Simulated Risk Score:</span>
+                <span class="risk-score {{ simulatedRiskLevel() }}" style="font-size: 18px; font-weight: 700; padding: 4px 12px; border-radius: 6px;">{{ simulatedRiskScore() }}%</span>
+                <span class="risk-level {{ simulatedRiskLevel() }}" style="text-transform: uppercase; font-size: 11px; font-weight: 700;">{{ simulatedRiskLevel() }}</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; padding: 12px 0;">
+            <div>
+                <label style="font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
+                    <span>Monthly Overtime Hours</span>
+                    <strong>{{ overtimeHours() }} hrs</strong>
+                </label>
+                <input type="range" min="0" max="40" [ngModel]="overtimeHours()" (ngModelChange)="overtimeHours.set($event)" style="width: 100%; margin-top: 6px; accent-color: #a855f7;">
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
+                    <span>Market Salary Ratio</span>
+                    <strong>{{ salaryRatio() * 100 | number:'1.0-0' }}%</strong>
+                </label>
+                <input type="range" min="0.5" max="1.5" step="0.05" [ngModel]="salaryRatio()" (ngModelChange)="salaryRatio.set($event)" style="width: 100%; margin-top: 6px; accent-color: #a855f7;">
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
+                    <span>Weekly Remote Days</span>
+                    <strong>{{ remoteDays() }} days</strong>
+                </label>
+                <input type="range" min="0" max="5" [ngModel]="remoteDays()" (ngModelChange)="remoteDays.set($event)" style="width: 100%; margin-top: 6px; accent-color: #a855f7;">
+            </div>
+
+            <div>
+                <label style="font-size: 12px; color: #cbd5e1; display: flex; justify-content: space-between;">
+                    <span>Active Projects</span>
+                    <strong>{{ projectLoad() }} projects</strong>
+                </label>
+                <input type="range" min="1" max="8" [ngModel]="projectLoad()" (ngModelChange)="projectLoad.set($event)" style="width: 100%; margin-top: 6px; accent-color: #a855f7;">
+            </div>
+        </div>
+    </div>
+
     <div class="two-col">
         <!-- Attrition Risk Table -->
         <div class="insight-card">
-            <h2>Attrition Risk</h2>
+            <h2>Workforce Attrition Signals</h2>
             <div class="risk-list">
                 @for (a of attritionData(); track a.name) {
                 <div class="risk-row">
