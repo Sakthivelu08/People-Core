@@ -39,4 +39,3 @@ jobs:
           app-name: 'peoplecore-backend-api'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE }}
           package: './server'
-          startup-command: 'node dist/index.js'
