@@ -27,7 +27,7 @@
                 <button (click)="prevMonth()" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; cursor: pointer; display: flex; align-items: center; color: #475569;">
                     <span class="material-icons-outlined" style="font-size: 18px;">chevron_left</span>
                 </button>
-                <strong style="font-size: 14px; color: #0f172a; min-width: 130px; text-align: center;">{{ monthYearLabel() }}</strong>
+                <strong style="font-size: 14px; color: #0f172a; min-width: 140px; text-align: center;">{{ monthYearLabel() }}</strong>
                 <button (click)="nextMonth()" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 8px; cursor: pointer; display: flex; align-items: center; color: #475569;">
                     <span class="material-icons-outlined" style="font-size: 18px;">chevron_right</span>
                 </button>
@@ -44,13 +44,19 @@
             <div style="font-size: 11px; font-weight: 700; color: #64748b; text-align: center; text-transform: uppercase; padding: 6px 0;">Sat</div>
 
             @for (item of calendarGrid(); track $index) {
-            <div [style.background]="item.dayNumber ? (item.isToday ? '#e0e7ff' : '#f8fafc') : 'transparent'" [style.border]="item.dayNumber ? (item.isToday ? '1px solid #6366f1' : '1px solid #e2e8f0') : 'none'" style="padding: 8px; border-radius: 8px; min-height: 56px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div [style.background]="item.dayNumber ? (item.leave ? (item.leave.status === 'approved' ? '#f0fdf4' : '#fffbeb') : (item.isToday ? '#e0e7ff' : '#f8fafc')) : 'transparent'" [style.border]="item.dayNumber ? (item.leave ? (item.leave.status === 'approved' ? '1px solid #86efac' : '1px solid #fde047') : (item.isToday ? '1px solid #6366f1' : '1px solid #e2e8f0')) : 'none'" style="padding: 8px; border-radius: 8px; min-height: 64px; display: flex; flex-direction: column; justify-content: space-between;">
                 @if (item.dayNumber) {
                 <span [style.color]="item.isToday ? '#4338ca' : '#334155'" style="font-size: 12px; font-weight: 700;">{{ item.dayNumber }}</span>
                 @if (item.leave) {
-                <span [style.background]="item.leave.status === 'approved' ? '#dcfce7' : '#fef3c7'" [style.color]="item.leave.status === 'approved' ? '#15803d' : '#b45309'" style="font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="item.leave.type + ' (' + item.leave.status + ')'">
-                    {{ item.leave.type | titlecase }}
+                @if (item.leave.status === 'approved') {
+                <span style="background: #16a34a; color: #ffffff; font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(22,163,74,0.3);" [title]="'On Leave: ' + item.leave.type + ' (' + item.leave.reason + ')'">
+                    On Leave ({{ item.leave.type | titlecase }})
                 </span>
+                } @else {
+                <span style="background: #d97706; color: #ffffff; font-size: 10px; padding: 3px 6px; border-radius: 4px; font-weight: 700; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 2px rgba(217,119,6,0.3);" [title]="'Pending Leave: ' + item.leave.type">
+                    Pending ({{ item.leave.type | titlecase }})
+                </span>
+                }
                 }
                 }
             </div>

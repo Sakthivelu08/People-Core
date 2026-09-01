@@ -73,9 +73,12 @@ export class LeaveComponent implements OnInit {
 
       // Check if any leave request overlaps with this date
       const activeLeave = reqs.find(r => {
-        if (!r.startDate || !r.endDate) return false;
-        const start = new Date(r.startDate);
-        const end = new Date(r.endDate);
+        const rawStart = r.startDate || (r as any).start_date;
+        const rawEnd = r.endDate || (r as any).end_date;
+        if (!rawStart || !rawEnd) return false;
+        
+        const start = new Date(rawStart);
+        const end = new Date(rawEnd);
         start.setHours(0,0,0,0);
         end.setHours(23,59,59,999);
         return dayDate >= start && dayDate <= end;
@@ -109,7 +112,18 @@ export class LeaveComponent implements OnInit {
 
   load() {
     this.leaveService.getAll().subscribe({
-      next: (reqs) => this.requests.set(reqs),
+      next: (reqs) => {
+        this.requests.set(reqs);
+        // Automatically view the month of the most recent leave request if available
+        if (reqs && reqs.length > 0) {
+          const latest = reqs[0];
+          const rawStart = latest.startDate || (latest as any).start_date;
+          if (rawStart) {
+            const d = new Date(rawStart);
+            this.currentDate.set(new Date(d.getFullYear(), d.getMonth(), 1));
+          }
+        }
+      },
       error: (err) => {
         console.error('Failed to get leaves:', err);
         this.snackbar.error('Failed to load leave history.');
