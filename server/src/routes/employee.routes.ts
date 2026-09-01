@@ -7,6 +7,12 @@ const router = Router();
 // GET /api/employees/me - Get currently logged-in user profile
 router.get('/me', authenticate, EmployeeController.getMe);
 
+// GET /api/employees/azure-sync/status - Get Azure directory sync stats
+router.get('/azure-sync/status', authenticate, authorizeAdmin, EmployeeController.getAzureSyncStatus);
+
+// POST /api/employees/azure-sync/trigger - Trigger directory sync cycle
+router.post('/azure-sync/trigger', authenticate, authorizeAdmin, EmployeeController.triggerAzureSync);
+
 // GET /api/employees - List all employees (Admin only)
 router.get('/', authenticate, authorizeAdmin, EmployeeController.getAll);
 
