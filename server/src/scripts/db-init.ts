@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import path from 'path';
 import crypto from 'crypto';
 
-// Load environment variables
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 const host = process.env.DB_HOST || '127.0.0.1';
