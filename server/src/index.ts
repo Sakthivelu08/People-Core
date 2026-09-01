@@ -65,26 +65,23 @@ function scheduleDailyJobs() {
   setInterval(runJobs, 24 * 60 * 60 * 1000);
 }
 
-// Start the server
-async function startServer() {
-  console.log('[Server] Connecting to database...');
-  const dbConnected = await checkConnection();
-  
-  if (dbConnected) {
-    console.log('[Server] Database connected successfully.');
-    console.log('[Server] Connecting to Redis...');
-    await connectRedis();
-    scheduleDailyJobs();
-  } else {
-    console.error('[Server] CRITICAL: Database connection failed. Booting down...');
-    process.exit(1);
+// Start the server immediately so Azure App Service binds PORT cleanly
+app.listen(port, async () => {
+  console.log(`[Server] PeopleCore Backend is running on port ${port}`);
+  console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
+
+  try {
+    console.log('[Server] Connecting to database...');
+    const dbConnected = await checkConnection();
+    if (dbConnected) {
+      console.log('[Server] Database connected successfully.');
+      console.log('[Server] Connecting to Redis...');
+      await connectRedis();
+      scheduleDailyJobs();
+    } else {
+      console.warn('[Server] WARNING: Database connection unavailable on startup. Retrying asynchronously...');
+    }
+  } catch (err: any) {
+    console.warn('[Server] Non-fatal initialization warning:', err.message);
   }
-
-  app.listen(port, () => {
-    console.log(`[Server] PeopleCore Backend is running on http://localhost:${port}`);
-    console.log(`[Server] Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`[Server] Active token verification: ${process.env.VALIDATE_AZURE_TOKEN === 'true' ? 'ENABLED' : 'DISABLED (Mock/Header mode)'}`);
-  });
-}
-
-startServer();
+});

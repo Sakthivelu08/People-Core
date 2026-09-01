@@ -21,10 +21,12 @@ export class AdminDashboardComponent implements OnInit {
     onboardingOpen: 0
   });
 
+  employeesList = signal<any[]>([]);
   pendingLeavesList = signal<any[]>([]);
   highRiskEmployees = signal<any[]>([]);
   loading = signal<boolean>(true);
 
+  employeeHeaders = ['Employee', 'Role', 'Department', 'Job Title', 'Status', 'Actions'];
   leaveHeaders = ['Employee', 'Type', 'Duration', 'Reason', 'Actions'];
   riskHeaders = ['Employee', 'Department', 'Risk Score', 'Key Risk Factors'];
 
@@ -41,6 +43,7 @@ export class AdminDashboardComponent implements OnInit {
     // 1. Fetch Employees
     this.api.getEmployees().subscribe({
       next: (employees) => {
+        this.employeesList.set(employees);
         this.stats.update(s => ({ ...s, totalEmployees: employees.length }));
       },
       error: (err) => {
@@ -85,6 +88,23 @@ export class AdminDashboardComponent implements OnInit {
         console.error('Failed to load onboarding tasks:', err);
         this.snackbar.error('Failed to load onboarding status.');
         this.loading.set(false);
+      }
+    });
+  }
+
+  deleteEmployee(id: string, name: string) {
+    if (!confirm(`Are you sure you want to delete employee "${name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    this.api.deleteEmployee(id).subscribe({
+      next: () => {
+        this.snackbar.success(`Employee "${name}" deleted successfully!`);
+        this.loadData();
+      },
+      error: (err) => {
+        console.error('Failed to delete employee:', err);
+        this.snackbar.error('Failed to delete employee.');
       }
     });
   }

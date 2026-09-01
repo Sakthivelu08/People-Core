@@ -19,4 +19,7 @@ router.get('/', authenticate, authorizeAdmin, EmployeeController.getAll);
 // POST /api/employees - Register a new employee (Admin only)
 router.post('/', authenticate, authorizeAdmin, EmployeeController.register);
 
+// DELETE /api/employees/:id - Delete an employee by ID (Admin only)
+router.delete('/:id', authenticate, authorizeAdmin, EmployeeController.delete);
+
 export default router;

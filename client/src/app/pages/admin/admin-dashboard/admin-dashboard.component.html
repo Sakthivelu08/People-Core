@@ -19,6 +19,38 @@
 
     <!-- Admin Workflows Section -->
     <div class="dashboard-sections">
+        <!-- Employee Management Roster Table -->
+        <div class="table-card" style="margin-bottom: 30px;">
+            <h2>Employee Roster Management</h2>
+            @if (employeesList().length === 0) {
+            <div class="empty-state">
+                No employees registered yet.
+            </div>
+            } @else {
+            <app-table [headers]="employeeHeaders">
+                @for (emp of employeesList(); track emp.id) {
+                <tr>
+                    <td>
+                        <div class="emp-meta">
+                            <span class="emp-name">{{ emp.name }}</span>
+                            <span class="emp-email">{{ emp.email }}</span>
+                        </div>
+                    </td>
+                    <td><span class="role-badge">{{ emp.role || 'Employee' }}</span></td>
+                    <td>{{ emp.department || 'General' }}</td>
+                    <td>{{ emp.job_title || 'N/A' }}</td>
+                    <td><span class="status-badge {{ emp.status || 'active' }}">{{ emp.status || 'Active' }}</span></td>
+                    <td>
+                        <button class="btn-reject" (click)="deleteEmployee(emp.id, emp.name)">
+                            <span class="material-icons-outlined" style="font-size: 14px; vertical-align: middle; margin-right: 2px;">delete</span> Delete
+                        </button>
+                    </td>
+                </tr>
+                }
+            </app-table>
+            }
+        </div>
+
         <!-- Leave Approvals Management -->
         <div class="table-card">
             <h2>Pending Leave Requests</h2>

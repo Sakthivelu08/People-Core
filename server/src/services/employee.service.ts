@@ -45,6 +45,27 @@ export class EmployeeService {
     return rows;
   }
 
+  static async deleteEmployee(id: string) {
+    const connection = await pool.getConnection();
+    try {
+      await connection.beginTransaction();
+
+      await connection.execute(`DELETE FROM leave_requests WHERE employee_id = ?`, [id]);
+      await connection.execute(`DELETE FROM leave_balances WHERE employee_id = ?`, [id]);
+      await connection.execute(`DELETE FROM onboarding_tasks WHERE employee_id = ?`, [id]);
+      await connection.execute(`DELETE FROM employees WHERE id = ?`, [id]);
+
+      await connection.commit();
+      await invalidateCache('employees:all');
+      return true;
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  }
+
   static async registerEmployee(dto: RegisterEmployeeDto) {
     const connection = await pool.getConnection();
     try {

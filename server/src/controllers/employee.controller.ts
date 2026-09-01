@@ -25,6 +25,20 @@ export class EmployeeController {
     }
   }
 
+  static async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        res.status(400).json({ error: 'Employee ID is required for deletion.' });
+        return;
+      }
+      await EmployeeService.deleteEmployee(id);
+      res.json({ message: 'Employee deleted successfully from People-Core database.' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const {

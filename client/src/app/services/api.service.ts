@@ -24,6 +24,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}${this.endpoints.employees}`, employee);
   }
 
+  deleteEmployee(id: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}${this.endpoints.employees}/${id}`);
+  }
+
   // --- Leaves ---
   getLeaveBalances(): Observable<any> {
     return this.http.get(`${this.baseUrl}${this.endpoints.leaveBalances}`);
