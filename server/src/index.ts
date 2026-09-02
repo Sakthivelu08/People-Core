@@ -1,7 +1,11 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+
+// Load environment variables BEFORE any module or service imports
+dotenv.config({ path: path.join(__dirname, '../.env') });
+
+import express from 'express';
+import cors from 'cors';
 import { checkConnection } from './config/db';
 import { connectRedis } from './config/redis';
 import { errorHandler } from './middlewares/error';
@@ -9,9 +13,6 @@ import employeeRouter from './routes/employee.routes';
 import leaveRouter from './routes/leave.routes';
 import onboardingRouter from './routes/onboarding.routes';
 import insightRouter from './routes/insight.routes';
-
-// Load environment variables
-dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,9 +48,18 @@ function scheduleDailyJobs() {
       const { exec } = require('child_process');
       const serverDir = path.join(__dirname, '..');
       
-      exec(`python "${path.join(serverDir, 'src/scripts/ml_pipeline.py')}"`, (err: any, stdout: string) => {
-        if (err) console.error('[Scheduler] ML pipeline error:', err.message);
-        else console.log('[Scheduler] ML pipeline completed successfully.');
+      // Check if python or python3 executable exists in the current system PATH
+      const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+      
+      exec(`${pythonCmd} --version`, (checkErr: any) => {
+        if (checkErr) {
+          console.log('[Scheduler] Python runtime not detected in container environment. Skipping ML script execution.');
+        } else {
+          exec(`${pythonCmd} "${path.join(serverDir, 'src/scripts/ml_pipeline.py')}"`, (err: any, stdout: string) => {
+            if (err) console.error('[Scheduler] ML pipeline error:', err.message);
+            else console.log('[Scheduler] ML pipeline completed successfully.');
+          });
+        }
       });
 
       exec(`npx ts-node "${path.join(serverDir, 'src/scripts/ai_narrative_worker.ts')}"`, (err: any, stdout: string) => {
