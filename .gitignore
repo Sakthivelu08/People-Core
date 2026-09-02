@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 doc_assets/
 *.docx
+*.excalidraw
 
 # Environment Files
 .env

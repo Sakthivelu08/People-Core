@@ -16,4 +16,15 @@ router.post('/requests', authenticate, LeaveController.apply);
 // PATCH /api/leaves/requests/:id/status - Approve or reject a request (Admin only)
 router.patch('/requests/:id/status', authenticate, authorizeAdmin, LeaveController.updateStatus);
 
+// Convenience endpoint aliases for /approve and /reject
+router.patch('/requests/:id/approve', authenticate, authorizeAdmin, (req, res, next) => {
+  req.body.status = 'approved';
+  LeaveController.updateStatus(req, res, next);
+});
+
+router.patch('/requests/:id/reject', authenticate, authorizeAdmin, (req, res, next) => {
+  req.body.status = 'rejected';
+  LeaveController.updateStatus(req, res, next);
+});
+
 export default router;

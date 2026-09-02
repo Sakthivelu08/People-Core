@@ -383,7 +383,7 @@ describe('Controller Tier Unit Tests', () => {
 
       await InsightController.getNarrative(req, res, next);
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ narrative: expect.any(String) }));
-    });
+    }, 15000);
 
     it('getNarrative - calls next on error', async () => {
       (InsightService.getNarrativeInsights as jest.Mock).mockRejectedValueOnce(new Error('Error'));

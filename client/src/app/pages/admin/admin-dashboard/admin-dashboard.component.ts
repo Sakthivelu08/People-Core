@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../services/api.service';
 import { MetricCardComponent } from '../../../shared/components/metric-card/metric-card.component';
 import { TableComponent } from '../../../shared/components/table/table.component';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { BeautifulDatePipe } from '../../../shared/pipes/beautiful-date.pipe';
 import { SnackbarService } from '../../../core/services/snackbar.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, MetricCardComponent, TableComponent, BeautifulDatePipe],
+  imports: [CommonModule, MetricCardComponent, TableComponent, ModalComponent, BeautifulDatePipe],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -25,6 +26,10 @@ export class AdminDashboardComponent implements OnInit {
   pendingLeavesList = signal<any[]>([]);
   highRiskEmployees = signal<any[]>([]);
   loading = signal<boolean>(true);
+
+  // Modal State for Reusable Delete Confirmation
+  deleteModalOpen = signal<boolean>(false);
+  employeeToDelete = signal<{ id: string; name: string } | null>(null);
 
   employeeHeaders = ['Employee', 'Role', 'Department', 'Job Title', 'Status', 'Actions'];
   leaveHeaders = ['Employee', 'Type', 'Duration', 'Reason', 'Actions'];
@@ -92,19 +97,30 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  deleteEmployee(id: string, name: string) {
-    if (!confirm(`Are you sure you want to delete employee "${name}"? This action cannot be undone.`)) {
-      return;
-    }
+  confirmDeleteEmployee(id: string, name: string) {
+    this.employeeToDelete.set({ id, name });
+    this.deleteModalOpen.set(true);
+  }
 
-    this.api.deleteEmployee(id).subscribe({
+  closeDeleteModal() {
+    this.deleteModalOpen.set(false);
+    this.employeeToDelete.set(null);
+  }
+
+  performDeleteEmployee() {
+    const target = this.employeeToDelete();
+    if (!target) return;
+
+    this.api.deleteEmployee(target.id).subscribe({
       next: () => {
-        this.snackbar.success(`Employee "${name}" deleted successfully!`);
+        this.snackbar.success(`Employee "${target.name}" deleted successfully!`);
+        this.closeDeleteModal();
         this.loadData();
       },
       error: (err) => {
         console.error('Failed to delete employee:', err);
         this.snackbar.error('Failed to delete employee.');
+        this.closeDeleteModal();
       }
     });
   }
