@@ -97,17 +97,27 @@ describe('ApiService Unit Tests', () => {
     req.flush({});
   });
 
+  it('deleteEmployee - deletes employee by id', () => {
+    service.deleteEmployee('e100').subscribe(res => expect(res).toBeDefined());
+    const req = httpMock.expectOne(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.employees}/e100`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush({});
+  });
+
   it('getAttritionRisk, getEngagementScores, getNarrativeSummary - fetches insights', () => {
     service.getAttritionRisk().subscribe(res => expect(res).toBeDefined());
     service.getEngagementScores().subscribe(res => expect(res).toBeDefined());
+    service.getNarrativeSummary('gemini').subscribe(res => expect(res).toBeDefined());
     service.getNarrativeSummary().subscribe(res => expect(res).toBeDefined());
 
     const req1 = httpMock.expectOne(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.attrition}`);
     const req2 = httpMock.expectOne(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.engagement}`);
-    const req3 = httpMock.expectOne(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.narrative}`);
+    const req3 = httpMock.expectOne(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.narrative}?provider=gemini`);
+    const req4 = httpMock.expectOne(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.narrative}`);
 
     req1.flush([]);
     req2.flush([]);
     req3.flush({});
+    req4.flush({});
   });
 });

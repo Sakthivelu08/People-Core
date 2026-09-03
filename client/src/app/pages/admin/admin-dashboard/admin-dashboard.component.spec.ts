@@ -32,6 +32,8 @@ describe('AdminDashboardComponent Unit Tests', () => {
       info: jasmine.createSpy('info')
     };
 
+    spyOn(console, 'error');
+
     await TestBed.configureTestingModule({
       imports: [AdminDashboardComponent],
       providers: [

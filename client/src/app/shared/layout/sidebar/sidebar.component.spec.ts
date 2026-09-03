@@ -36,7 +36,7 @@ describe('SidebarComponent', () => {
   });
 
   it('should return employee nav items when not in admin path', () => {
-    expect(component.navItems.length).toBe(3);
+    expect(component.navItems.length).toBe(4);
     expect(component.portalTitle).toBe('PeopleCore Portal');
   });
 
@@ -44,7 +44,7 @@ describe('SidebarComponent', () => {
     spyOnProperty(router, 'url', 'get').and.returnValue('/admin/dashboard');
     expect(component.isAdminMode).toBe(true);
     expect(component.portalTitle).toBe('PeopleCore Admin');
-    expect(component.navItems.length).toBe(4);
+    expect(component.navItems.length).toBe(5);
   });
 
   it('should trigger logout', () => {

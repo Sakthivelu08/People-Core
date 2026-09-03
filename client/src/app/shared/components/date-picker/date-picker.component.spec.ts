@@ -112,10 +112,15 @@ describe('DatePickerComponent', () => {
     expect(component.isOpen()).toBe(false);
   });
 
-  it('should handle document click to close dropdown', () => {
+  it('should handle document click to close or keep dropdown open', () => {
     component.isOpen.set(true);
     const outsideEvent = new MouseEvent('click');
     component.onDocumentClick(outsideEvent);
     expect(component.isOpen()).toBe(false);
+
+    component.isOpen.set(true);
+    const insideEvent = { target: fixture.nativeElement } as any;
+    component.onDocumentClick(insideEvent);
+    expect(component.isOpen()).toBe(true);
   });
 });

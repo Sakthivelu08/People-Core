@@ -3,12 +3,22 @@ import { of, throwError } from 'rxjs';
 import { InsightsComponent } from './insights.component';
 import { InsightsService } from '../../core/services/insights.service';
 
+import { ApiService } from '../../services/api.service';
+
 describe('InsightsComponent', () => {
   let fixture: ComponentFixture<InsightsComponent>;
   let component: InsightsComponent;
   let mockInsightsService: any;
+  let mockApiService: any;
 
   beforeEach(async () => {
+    mockApiService = {
+      getNarrativeSummary: jasmine.createSpy('getNarrativeSummary').and.returnValue(of({ narrative: 'Mock AI narrative text here.' })),
+      getEmployees: jasmine.createSpy('getEmployees').and.returnValue(of([])),
+      getLeaveRequests: jasmine.createSpy('getLeaveRequests').and.returnValue(of([])),
+      getOnboardingTasks: jasmine.createSpy('getOnboardingTasks').and.returnValue(of([]))
+    };
+
     mockInsightsService = {
       getAttritionInsights: jasmine.createSpy('getAttritionInsights').and.returnValue(of([
         { name: 'Arjun Mehta', department: 'Sales', riskScore: 78, riskLevel: 'high', keyFactors: ['Short tenure'] }
@@ -19,9 +29,14 @@ describe('InsightsComponent', () => {
       getAiNarrative: jasmine.createSpy('getAiNarrative').and.returnValue(of('Mock AI narrative text here.'))
     };
 
+    spyOn(console, 'error');
+
     await TestBed.configureTestingModule({
       imports: [InsightsComponent],
-      providers: [{ provide: InsightsService, useValue: mockInsightsService }]
+      providers: [
+        { provide: InsightsService, useValue: mockInsightsService },
+        { provide: ApiService, useValue: mockApiService }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(InsightsComponent);
@@ -70,5 +85,38 @@ describe('InsightsComponent', () => {
     expect(component.trendClass('stable')).toBe('stable');
     expect(component.trendClass('declining')).toBe('declining');
     expect(component.trendClass('unknown')).toBe('');
+  });
+
+  it('should change provider and fetch narrative', () => {
+    component.changeProvider('ollama');
+    expect(component.selectedProvider()).toBe('ollama');
+    expect(mockApiService.getNarrativeSummary).toHaveBeenCalledWith('ollama');
+  });
+
+  it('should handle fetchNarrative error fallback', () => {
+    mockApiService.getNarrativeSummary.and.returnValue(throwError(() => new Error('API Error')));
+    component.fetchNarrative();
+    expect(component.narrative()).toContain('Defaulting to cached insights');
+    expect(component.isGenerating()).toBe(false);
+  });
+
+  it('should calculate simulated risk score and level correctly across branches', () => {
+    component.overtimeHours.set(20);
+    component.salaryRatio.set(0.5);
+    component.remoteDays.set(0);
+    component.projectLoad.set(5);
+    expect(component.simulatedRiskLevel()).toBe('high');
+
+    component.overtimeHours.set(8);
+    component.salaryRatio.set(0.95);
+    component.remoteDays.set(2);
+    component.projectLoad.set(2);
+    expect(component.simulatedRiskLevel()).toBe('medium');
+
+    component.overtimeHours.set(0);
+    component.salaryRatio.set(1.2);
+    component.remoteDays.set(5);
+    component.projectLoad.set(1);
+    expect(component.simulatedRiskLevel()).toBe('low');
   });
 });

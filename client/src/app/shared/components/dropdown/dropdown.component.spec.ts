@@ -56,10 +56,15 @@ describe('DropdownComponent', () => {
     expect(component.isOpen()).toBe(false);
   });
 
-  it('should close dropdown on outside document click', () => {
+  it('should close dropdown on outside document click and keep open on inside click', () => {
     component.isOpen.set(true);
     const outsideEvent = new MouseEvent('click');
     component.onDocumentClick(outsideEvent);
     expect(component.isOpen()).toBe(false);
+
+    component.isOpen.set(true);
+    const insideEvent = { target: fixture.nativeElement } as any;
+    component.onDocumentClick(insideEvent);
+    expect(component.isOpen()).toBe(true);
   });
 });

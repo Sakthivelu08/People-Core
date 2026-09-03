@@ -112,5 +112,11 @@ describe('AddEmployeeComponent Unit Tests', () => {
 
     expect(mockSnackbar.error).toHaveBeenCalledWith('Duplicate entry');
     expect(component.submitting()).toBe(false);
+
+    mockApi.registerEmployee.and.returnValue(throwError(() => ({})));
+    component.onSubmit();
+    tick();
+
+    expect(mockSnackbar.error).toHaveBeenCalledWith('Database registration failed. Please try again.');
   }));
 });

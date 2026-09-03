@@ -29,6 +29,8 @@ describe('LeaveComponent', () => {
       error: jasmine.createSpy('error')
     };
 
+    spyOn(console, 'error');
+
     await TestBed.configureTestingModule({
       imports: [LeaveComponent, ReactiveFormsModule],
       providers: [

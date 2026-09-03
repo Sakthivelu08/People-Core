@@ -21,6 +21,8 @@ describe('OnboardingComponent', () => {
       toggle: jasmine.createSpy('toggle').and.returnValue(of({}))
     };
 
+    spyOn(console, 'error');
+
     await TestBed.configureTestingModule({
       imports: [OnboardingComponent],
       providers: [{ provide: OnboardingService, useValue: mockOnboardingService }]
