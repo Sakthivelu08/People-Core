@@ -8,6 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "db:init": "ts-node src/scripts/db-init.ts",
+    "export-powerbi": "ts-node src/scripts/export_powerbi_dataset.ts",
     "test": "jest",
     "test:coverage": "jest --coverage"
   },

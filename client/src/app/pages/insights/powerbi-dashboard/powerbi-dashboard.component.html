@@ -1,0 +1,86 @@
+<div class="powerbi-container">
+  <!-- Filter Control Bar -->
+  <div class="header-bar">
+    <div class="title-group">
+      <span class="material-icons title-icon">insights</span>
+      <h2>Power BI Workspace Filters</h2>
+    </div>
+    <div class="actions-group">
+      <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="setFilter('all')">All Departments</button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'engineering'" (click)="setFilter('engineering')">Engineering</button>
+      <button class="filter-btn" [class.active]="selectedFilter === 'hr'" (click)="setFilter('hr')">HR & Support</button>
+    </div>
+  </div>
+
+  <!-- KPI Scorecards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="material-icons card-icon blue">people</span>
+        <span class="kpi-title">Total Headcount</span>
+      </div>
+      <div class="kpi-value">{{ summaryMetrics.totalEmployees }}</div>
+      <div class="kpi-subtitle">Active workforce directory</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="material-icons card-icon red">warning</span>
+        <span class="kpi-title">High Flight Risk</span>
+      </div>
+      <div class="kpi-value red-text">{{ summaryMetrics.highRiskCount }}</div>
+      <div class="kpi-subtitle">Requires HR retention action</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="material-icons card-icon green">event_available</span>
+        <span class="kpi-title">Avg Leave Utilization</span>
+      </div>
+      <div class="kpi-value">{{ summaryMetrics.avgLeaveDays }} Days</div>
+      <div class="kpi-subtitle">Per employee per quarter</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <span class="material-icons card-icon purple">assignment_turned_in</span>
+        <span class="kpi-title">Onboarding Progress</span>
+      </div>
+      <div class="kpi-value">{{ summaryMetrics.onboardingCompletionRate }}%</div>
+      <div class="kpi-subtitle">Task completion rate</div>
+    </div>
+  </div>
+
+  <!-- Interactive Report Canvas Embed -->
+  <div class="report-canvas">
+    <div class="canvas-header">
+      <span class="material-icons">bar_chart</span>
+      <span>Power BI Report Canvas — Live Dataset Bridge</span>
+    </div>
+    
+    <div class="canvas-body">
+      <div class="chart-panel">
+        <h3>Departmental Risk Distribution</h3>
+        <div class="mock-bar-container">
+          <div class="bar-row" *ngFor="let item of departmentDistribution">
+            <span class="label">{{ item.name }}</span>
+            <div class="bar-bg">
+              <div class="bar-fill" [ngClass]="item.class" [style.width.%]="item.percent"></div>
+            </div>
+            <span class="val">{{ item.percent }}% {{ item.level }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-panel">
+        <h3>Leave Utilization by Type</h3>
+        <div class="leave-breakdown">
+          <div class="leave-item" *ngFor="let item of leaveBreakdown">
+            <span class="badge" [ngClass]="item.class">{{ item.type }}</span>
+            <span class="count">{{ item.days }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

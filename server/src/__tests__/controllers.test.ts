@@ -6,11 +6,13 @@ import { EmployeeService } from '../services/employee.service';
 import { LeaveService } from '../services/leave.service';
 import { OnboardingService } from '../services/onboarding.service';
 import { InsightService } from '../services/insight.service';
+import { AiProviderService } from '../services/ai_provider.service';
 
 jest.mock('../services/employee.service');
 jest.mock('../services/leave.service');
 jest.mock('../services/onboarding.service');
 jest.mock('../services/insight.service');
+jest.mock('../services/ai_provider.service');
 
 function createMockReqRes(user: any = { id: 'e1', role: 'Employee', azure_oid: 'oid1' }, body: any = {}, params: any = {}, query: any = {}) {
   const req: any = {
@@ -377,6 +379,7 @@ describe('Controller Tier Unit Tests', () => {
     });
 
     it('getNarrative - returns generated narrative report', async () => {
+      (AiProviderService.prototype.generateExecutiveSummary as jest.Mock) = jest.fn().mockResolvedValueOnce('AI Summary');
       (InsightService.getNarrativeInsights as jest.Mock).mockResolvedValueOnce({ narrative: 'AI Summary' });
       (InsightService.getAttritionRisks as jest.Mock).mockResolvedValueOnce([]);
       const { req, res, next } = createMockReqRes();

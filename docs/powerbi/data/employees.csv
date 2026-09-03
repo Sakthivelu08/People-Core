@@ -1,0 +1,6 @@
+id,azure_oid,name,email,job_title,department,office_location,role,status,join_date
+"018b14e5-9f5b-7b00-88cb-e389e6e88e22","a5d0a53b-8704-4866-aa37-0ea2a9f93238","Sakthivelu Selvam","sakthivelu.selvam@3dg82f.onmicrosoft.com","Senior Developer","Engineering","","Admin","active","2022-05-31"
+"018b14e5-9f5b-7b00-88cb-e389e6e88e23","8dd32d52-a137-11f1-bb6e-72858e6b4440","Priya Rajan","priya.rajan@psiog.com","HR Manager","HR","","Admin","active","2021-03-14"
+"018b14e5-9f5b-7b00-88cb-e389e6e88e24","8dd34be3-a137-11f1-bb6e-72858e6b4440","Arjun Mehta","arjun.mehta@psiog.com","Sales Executive","Sales","","Employee","onboarding","2026-05-31"
+"018b14e5-9f5b-7b00-88cb-e389e6e88e25","8dd34ef2-a137-11f1-bb6e-72858e6b4440","Divya Nair","divya.nair@psiog.com","Support Lead","Support","","Employee","active","2023-01-09"
+"d1def2c3-64db-4fad-82dd-cc5622bfe14c","1ade2e7c-ef20-4734-9b6f-52c0798bf4c1","Test Employee","testemployee@gmail.com","Test Engineer","Engineering","","Employee","onboarding",""

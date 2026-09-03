@@ -1,26 +1,41 @@
 <div class="page">
     <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <div>
-            <h1 class="page-title" style="color: #0f172a; font-size: 22px; font-weight: 700; margin: 0 0 4px 0;">AI People Insights & Simulator</h1>
-            <p class="page-sub" style="color: #64748b; font-size: 13px; margin: 0;">Powered by PeopleCore ML Engine · Data as of today</p>
+            <h1 class="page-title" style="color: #0f172a; font-size: 22px; font-weight: 700; margin: 0 0 4px 0;">AI People Insights & Power BI Analytics</h1>
+            <p class="page-sub" style="color: #64748b; font-size: 13px; margin: 0;">Powered by PeopleCore ML Engine & Power BI Workspace · Data as of today</p>
         </div>
         
-        <!-- Multi-AI Provider Selector using Reusable Dropdown Component -->
-        <div class="provider-selector" style="display: flex; align-items: center; gap: 8px;">
-            <span class="material-icons-outlined" style="font-size: 18px; color: #6366f1;">psychology</span>
-            <span style="font-size: 13px; color: #475569; font-weight: 600;">AI Engine:</span>
-            <div style="min-width: 220px;">
-                <app-dropdown [options]="providerOptions" [ngModel]="selectedProvider()" (ngModelChange)="changeProvider($event)"></app-dropdown>
-            </div>
+        <!-- Tab Switcher -->
+        <div style="display: flex; gap: 8px;">
+            <button (click)="activeTab.set('ai')" [style.background]="activeTab() === 'ai' ? '#4f46e5' : '#f1f5f9'" [style.color]="activeTab() === 'ai' ? '#ffffff' : '#475569'" style="border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <span class="material-icons-outlined" style="font-size: 16px;">psychology</span>
+                AI Insights & Simulator
+            </button>
+            <button (click)="activeTab.set('powerbi')" [style.background]="activeTab() === 'powerbi' ? '#4f46e5' : '#f1f5f9'" [style.color]="activeTab() === 'powerbi' ? '#ffffff' : '#475569'" style="border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                <span class="material-icons-outlined" style="font-size: 16px;">insights</span>
+                Power BI People Analytics
+            </button>
         </div>
     </div>
 
+    @if (activeTab() === 'powerbi') {
+      <app-powerbi-dashboard></app-powerbi-dashboard>
+    } @else {
+
     <!-- AI Narrative -->
     <div class="narrative-card">
-        <div class="narrative-header">
-            <div class="ai-badge">
-                <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">auto_awesome</span>
-                {{ selectedProvider() === 'gemini' ? 'Google Gemini 2.5' : (selectedProvider() === 'ollama' ? 'Ollama Llama 3' : 'Rule Engine') }} Insight
+        <div class="narrative-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div class="ai-badge">
+                  <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">auto_awesome</span>
+                  {{ selectedProvider() === 'gemini' ? 'Google Gemini 3.6' : (selectedProvider() === 'ollama' ? 'Ollama Llama 3' : 'Rule Engine') }} Insight
+              </div>
+              <div class="provider-selector" style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 12px; color: #cbd5e1; font-weight: 600;">Engine:</span>
+                  <div style="min-width: 180px;">
+                      <app-dropdown [options]="providerOptions" [ngModel]="selectedProvider()" (ngModelChange)="changeProvider($event)"></app-dropdown>
+                  </div>
+              </div>
             </div>
             <button class="regenerate-btn" (click)="regenerate()" [disabled]="isGenerating()">
                 <span class="material-icons-outlined" style="font-size:16px;vertical-align:middle">refresh</span>
@@ -130,4 +145,5 @@
             </div>
         </div>
     </div>
+    }
 </div>

@@ -1,0 +1,4 @@
+id,employee_id,type,start_date,end_date,days,status,reason,applied_on
+"8dd5d94a-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e22","annual","2026-05-11","2026-05-13",3,"approved","Family vacation","2026-04-30T18:30:00.000Z"
+"8dd5e313-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e22","sick","2026-06-01","2026-06-01",1,"approved","Fever and cold","2026-06-01T18:30:00.000Z"
+"8dd5e8a0-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e22","casual","2026-06-19","2026-06-19",1,"approved","Personal errand","2026-06-09T18:30:00.000Z"

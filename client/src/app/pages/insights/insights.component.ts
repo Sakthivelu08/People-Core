@@ -6,14 +6,17 @@ import { InsightsService } from '../../core/services/insights.service';
 import { AttritionInsight, EngagementInsight } from '../../core/models/insight.model';
 import { DropdownComponent } from '../../shared/components/dropdown/dropdown.component';
 
+import { PowerbiDashboardComponent } from './powerbi-dashboard/powerbi-dashboard.component';
+
 @Component({
   selector: 'app-insights',
   standalone: true,
-  imports: [CommonModule, FormsModule, DropdownComponent],
+  imports: [CommonModule, FormsModule, DropdownComponent, PowerbiDashboardComponent],
   templateUrl: './insights.component.html',
   styleUrls: ['./insights.component.scss'],
 })
 export class InsightsComponent implements OnInit {
+  activeTab = signal<'ai' | 'powerbi'>('ai');
   attritionData = signal<AttritionInsight[]>([]);
   engagementData = signal<EngagementInsight[]>([]);
   narrative = signal<string>('');

@@ -1,0 +1,5 @@
+id,employee_id,risk_score,risk_level,key_factors,generated_at
+"8dd865f3-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e22",18.00,"low","Strong performance,Active on projects","2026-08-26T04:49:00.000Z"
+"8dd86fb4-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e23",12.00,"low","High engagement,Recent recognition","2026-08-26T04:49:00.000Z"
+"8dd871af-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e24",78.00,"high","Short tenure,Low performance score,Missed check-ins","2026-08-26T04:49:00.000Z"
+"8dd872c6-a137-11f1-bb6e-72858e6b4440","018b14e5-9f5b-7b00-88cb-e389e6e88e25",54.00,"medium","No promotion in 2 years,Declining engagement","2026-08-26T04:49:00.000Z"
